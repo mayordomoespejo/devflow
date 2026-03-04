@@ -90,19 +90,19 @@ The model can change. The engineering process should not.
 Install into the current repository:
 
 ```sh
-npx devflow init
+npx devflow-cli init
 ```
 
 Install with the Cursor adapter:
 
 ```sh
-npx devflow init --adapter cursor
+npx devflow-cli init --adapter cursor
 ```
 
 Install with the generic adapter:
 
 ```sh
-npx devflow init --adapter generic
+npx devflow-cli init --adapter generic
 ```
 
 Default behavior:
@@ -123,13 +123,13 @@ Plugins extend Devflow with additional workflow capabilities beyond the built-in
 
 ```sh
 # Install a plugin from npm
-npx devflow add devflow-plugin-github
+npx devflow-cli add devflow-plugin-github
 
 # Install from a local path
-npx devflow add ./path/to/my-plugin
+npx devflow-cli add ./path/to/my-plugin
 
 # Remove a plugin
-npx devflow remove plugin-name
+npx devflow-cli remove plugin-name
 ```
 
 Installed plugins are tracked in `.devflow/plugins.yml` and their health is reported by `devflow doctor`. See [docs/plugins.md](docs/plugins.md) and [docs/plugin-authoring.md](docs/plugin-authoring.md) for full details.
@@ -148,9 +148,9 @@ Use `devflow doctor` to inspect the current repository or another target and rep
 Examples:
 
 ```sh
-npx devflow doctor
-npx devflow doctor --target ../other-repo
-npx devflow doctor --json
+npx devflow-cli doctor
+npx devflow-cli doctor --target ../other-repo
+npx devflow-cli doctor --json
 ```
 
 Useful flags:
@@ -174,9 +174,9 @@ It reports:
 Examples:
 
 ```sh
-npx devflow explain
-npx devflow explain --target ../other-repo
-npx devflow explain --json
+npx devflow-cli explain
+npx devflow-cli explain --target ../other-repo
+npx devflow-cli explain --json
 ```
 
 Useful flags:
@@ -190,7 +190,7 @@ Useful flags:
 1. Run:
 
 ```sh
-npx devflow init
+npx devflow-cli init
 ```
 
 2. Open the installed files:

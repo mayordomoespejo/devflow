@@ -9,16 +9,16 @@ Plugins extend Devflow with additional workflow capabilities beyond the built-in
 ### From npm
 
 ```sh
-npx devflow add devflow-plugin-github
-npx devflow add devflow-plugin-ci
-npx devflow add @myorg/devflow-plugin-rules
+npx devflow-cli add devflow-plugin-github
+npx devflow-cli add devflow-plugin-ci
+npx devflow-cli add @myorg/devflow-plugin-rules
 ```
 
 ### From a local path
 
 ```sh
-npx devflow add ./path/to/my-plugin
-npx devflow add /absolute/path/to/plugin
+npx devflow-cli add ./path/to/my-plugin
+npx devflow-cli add /absolute/path/to/plugin
 ```
 
 ### Flags
@@ -44,8 +44,8 @@ npx devflow add /absolute/path/to/plugin
 ## Removing a plugin
 
 ```sh
-npx devflow remove <plugin-name>
-npx devflow remove github
+npx devflow-cli remove <plugin-name>
+npx devflow-cli remove github
 ```
 
 This removes the plugin's `destDir` from disk and removes its entry from `.devflow/plugins.yml`.
@@ -57,8 +57,8 @@ This removes the plugin's `destDir` from disk and removes its entry from `.devfl
 `devflow doctor` reads `.devflow/plugins.yml` and reports the status of each installed plugin.
 
 ```sh
-npx devflow doctor
-npx devflow doctor --verbose
+npx devflow-cli doctor
+npx devflow-cli doctor --verbose
 ```
 
 A plugin is `ok` when its key file exists on disk. A plugin is `missing` when the key file is gone — run `devflow add <source> --force` to reinstall.
@@ -68,7 +68,7 @@ A plugin is `ok` when its key file exists on disk. A plugin is `missing` when th
 ## Updating a plugin
 
 ```sh
-npx devflow add devflow-plugin-github --force
+npx devflow-cli add devflow-plugin-github --force
 ```
 
 `--force` overwrites existing plugin files with the latest version from the source.
@@ -80,8 +80,8 @@ npx devflow add devflow-plugin-github --force
 Use `--target` to install a plugin into a specific package:
 
 ```sh
-npx devflow add devflow-plugin-github --target packages/api
-npx devflow remove github --target packages/api
+npx devflow-cli add devflow-plugin-github --target packages/api
+npx devflow-cli remove github --target packages/api
 ```
 
 ---

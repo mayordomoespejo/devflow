@@ -15,13 +15,13 @@ devflow/prompts/
 ## Install
 
 ```sh
-npx devflow init --adapter generic
+npx devflow-cli init --adapter generic
 ```
 
 Preview first:
 
 ```sh
-npx devflow init --adapter generic --dry-run
+npx devflow-cli init --adapter generic --dry-run
 ```
 
 ## How to use it

@@ -9,13 +9,13 @@ Use this approach with browser chats, terminal-based agents, editor plugins, loc
 The most portable setup is:
 
 ```sh
-npx devflow init
+npx devflow-cli init
 ```
 
 If you want explicit guidance files for non-integrated environments, use:
 
 ```sh
-npx devflow init --adapter generic
+npx devflow-cli init --adapter generic
 ```
 
 That gives you the universal core:
@@ -112,7 +112,7 @@ Before you finish, verify that:
 
 ## Checklist
 
-- [ ] Run `npx devflow init` or `npx devflow init --adapter generic`
+- [ ] Run `npx devflow-cli init` or `npx devflow-cli init --adapter generic`
 - [ ] Open `AGENTS.md`
 - [ ] Open `DEVFLOW.md`
 - [ ] Open `.devflow/workflows.yml` if present
@@ -156,9 +156,9 @@ Before you finish, verify that:
 Examples:
 
 ```sh
-npx devflow init --dry-run
-npx devflow init --merge
-npx devflow init --force
+npx devflow-cli init --dry-run
+npx devflow-cli init --merge
+npx devflow-cli init --force
 ```
 
 ## When To Use Cursor Instead

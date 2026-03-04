@@ -9,7 +9,7 @@ Use this path when you want the universal Devflow core plus Claude Code native s
 When you run:
 
 ```sh
-npx devflow init --adapter claude
+npx devflow-cli init --adapter claude
 ```
 
 Devflow installs:
@@ -41,7 +41,7 @@ Use the same Devflow phase order in Claude Code:
 
 Recommended flow:
 
-1. Run `npx devflow init --adapter claude`
+1. Run `npx devflow-cli init --adapter claude`
 2. Open the repository in Claude Code
 3. Start in chat with `/plan`
 4. Run `/build` to implement the agreed plan
@@ -85,12 +85,12 @@ Examples:
 If your project already contains a `.claude/` directory, `devflow init` will automatically select the `claude` adapter:
 
 ```sh
-npx devflow init   # picks claude if .claude/ exists
+npx devflow-cli init   # picks claude if .claude/ exists
 ```
 
 ## Checklist
 
-- [ ] Run `npx devflow init --adapter claude` in the repository root
+- [ ] Run `npx devflow-cli init --adapter claude` in the repository root
 - [ ] Confirm `AGENTS.md` exists
 - [ ] Confirm `DEVFLOW.md` exists
 - [ ] Confirm `devflow/prompts/plan.txt` exists
@@ -113,7 +113,7 @@ npx devflow init   # picks claude if .claude/ exists
 ### The wrong adapter was installed by default
 
 - `devflow init` chooses `claude` only when the target already contains `.claude/`
-- If you want Claude Code explicitly, run `npx devflow init --adapter claude`
+- If you want Claude Code explicitly, run `npx devflow-cli init --adapter claude`
 
 ### Reinstalling causes conflicts
 
@@ -124,9 +124,9 @@ npx devflow init   # picks claude if .claude/ exists
 Examples:
 
 ```sh
-npx devflow init --adapter claude --dry-run
-npx devflow init --adapter claude --merge
-npx devflow init --adapter claude --force
+npx devflow-cli init --adapter claude --dry-run
+npx devflow-cli init --adapter claude --merge
+npx devflow-cli init --adapter claude --force
 ```
 
 ### Commands exist but the workflow still feels inconsistent

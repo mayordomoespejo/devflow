@@ -105,7 +105,7 @@ my-npm-package/
 Install with:
 
 ```sh
-npx devflow add devflow-plugin-github
+npx devflow-cli add devflow-plugin-github
 ```
 
 ---
@@ -133,17 +133,17 @@ echo "# My plugin" > my-plugin/templates/.devflow/plugins/my-plugin/README.md
 
 # Create a test project
 mkdir /tmp/test-project
-npx devflow init --target /tmp/test-project --merge
+npx devflow-cli init --target /tmp/test-project --merge
 
 # Install the plugin
-npx devflow add ./my-plugin --target /tmp/test-project
+npx devflow-cli add ./my-plugin --target /tmp/test-project
 
 # Verify
 cat /tmp/test-project/.devflow/plugins.yml
-npx devflow doctor --target /tmp/test-project
+npx devflow-cli doctor --target /tmp/test-project
 
 # Remove the plugin
-npx devflow remove my-plugin --target /tmp/test-project
+npx devflow-cli remove my-plugin --target /tmp/test-project
 ```
 
 ---
