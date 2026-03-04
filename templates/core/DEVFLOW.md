@@ -125,12 +125,13 @@ Always follow this order. Do not skip phases when working on non-trivial tasks.
 
 ## Adapters
 
-If you use a supported harness, Devflow can wire these phases into native integrations:
+Devflow keeps the workflow portable by separating the universal core from optional adapters.
+
+Current adapter status:
 
 | Harness | Integration |
 |---------|-------------|
 | Cursor | `/plan`, `/review`, `/tests`, `/verify` slash commands |
-| Claude Code | `/plan`, `/review`, `/tests`, `/verify` slash commands |
-| Codex CLI | Loaded automatically via `AGENTS.md` |
-| Gemini CLI | Loaded via `GEMINI.md` (see `devflow/prompts/` for standalone prompts) |
-| Any other | Copy prompts from `devflow/prompts/` into any chat interface |
+| Claude Code | Documentation-only adapter. Follow `templates/adapters/claude-code/README.md` |
+| Codex CLI | Documentation-only adapter. Follow `templates/adapters/codex/README.md` |
+| Any other | Use `templates/adapters/generic/README.md` and copy prompts from `devflow/prompts/` |
