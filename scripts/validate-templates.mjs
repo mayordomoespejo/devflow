@@ -4,7 +4,7 @@
  * The source of truth is templates/:
  * - core/ is always installable
  * - prompts/ are always installable
- * - adapters/cursor/ is the only config-backed adapter
+ * - adapters/cursor/ and adapters/claude/ are config-backed adapters
  * - other adapters must exist at least as README-based guidance
  */
 
@@ -35,8 +35,15 @@ const REQUIRED_CURSOR_ADAPTER = [
   'adapters/cursor/.cursor/rules/typescript.md',
 ];
 
+const REQUIRED_CLAUDE_ADAPTER = [
+  'adapters/claude/.claude/commands/plan.md',
+  'adapters/claude/.claude/commands/build.md',
+  'adapters/claude/.claude/commands/tests.md',
+  'adapters/claude/.claude/commands/review.md',
+  'adapters/claude/.claude/commands/verify.md',
+];
+
 const REQUIRED_GUIDE_ADAPTERS = [
-  'adapters/claude/README.md',
   'adapters/codex/README.md',
   'adapters/gemini/README.md',
   'adapters/generic/README.md',
@@ -45,6 +52,7 @@ const REQUIRED_GUIDE_ADAPTERS = [
 const REQUIRED = [
   ...REQUIRED_CORE,
   ...REQUIRED_CURSOR_ADAPTER,
+  ...REQUIRED_CLAUDE_ADAPTER,
   ...REQUIRED_GUIDE_ADAPTERS,
 ];
 

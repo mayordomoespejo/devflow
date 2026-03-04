@@ -2,20 +2,23 @@
   "name": "devflow",
   "version": "0.1.0",
   "description": "Portable AI development workflow kit with a universal core and optional adapters",
-  "main": "src/cli.js",
+  "main": "dist/cli.js",
   "bin": {
-    "devflow": "src/cli.js"
+    "devflow": "bin/devflow.js"
   },
   "scripts": {
-    "dev": "node src/cli.js",
+    "build": "tsc",
+    "dev": "tsc && node dist/cli.js",
     "test:ci-smoke": "node scripts/ci-smoke-test.mjs",
     "test:doctor": "node scripts/doctor-test.mjs",
     "test:explain": "node scripts/explain-test.mjs",
+    "test:unit": "node scripts/unit-test.mjs",
     "validate": "node scripts/validate-templates.mjs",
-    "test": "node scripts/validate-templates.mjs && node scripts/smoke-test.mjs && node scripts/doctor-test.mjs && node scripts/explain-test.mjs"
+    "test": "tsc && node scripts/unit-test.mjs && node scripts/validate-templates.mjs && node scripts/smoke-test.mjs && node scripts/doctor-test.mjs && node scripts/explain-test.mjs"
   },
   "files": [
-    "src",
+    "bin",
+    "dist",
     "templates",
     "README.md",
     "LICENSE"
@@ -40,5 +43,9 @@
   },
   "dependencies": {
     "commander": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.0.0"
   }
 }

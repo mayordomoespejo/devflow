@@ -2,10 +2,11 @@
 
 This folder shows how to use Devflow in a universal way, without tying the workflow to a single model or tool.
 
-There are two practical routes:
+There are three practical routes:
 
 1. `generic`: copy prompts into any chat, IDE, or harness
-2. `cursor`: use the Cursor adapter, but keep the same prompts available as plain copy/paste inputs
+2. `cursor`: use the Cursor adapter with native slash commands
+3. `claude`: use the Claude Code adapter with native slash commands
 
 The workflow is always the same:
 
@@ -141,7 +142,44 @@ For each issue found, describe it clearly and suggest how to resolve it.
 If everything looks good, confirm it is ready to ship.
 ```
 
-## Route 2: Cursor
+## Route 2: Claude Code
+
+Use this when you want the Devflow workflow exposed inside Claude Code.
+
+Install:
+
+```sh
+npx devflow init --adapter claude
+```
+
+What you get:
+
+- all core files
+- `.claude/commands/plan.md`
+- `.claude/commands/build.md`
+- `.claude/commands/tests.md`
+- `.claude/commands/review.md`
+- `.claude/commands/verify.md`
+
+### Claude Code path A: use native commands
+
+In Claude Code chat:
+
+```text
+/plan add audit logging to the billing webhook
+/build implement the accepted plan
+/tests cover invalid payloads and retry handling
+/review focus on duplicate logic and security
+/verify against the accepted plan
+```
+
+### Claude Code path B: use plain copy/paste prompts
+
+You can still use the exact same generic prompts inside Claude Code chat. The prompts in `devflow/prompts/` are the portable source of truth.
+
+---
+
+## Route 3: Cursor
 
 Use this when you want the same Devflow workflow exposed inside Cursor.
 
@@ -209,4 +247,5 @@ If you want to evaluate Devflow quickly:
 ## Related Guides
 
 - [Anywhere](../docs/anywhere.md)
+- [Claude Code](../docs/claude.md)
 - [Cursor](../docs/cursor.md)

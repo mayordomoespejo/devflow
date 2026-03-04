@@ -104,7 +104,11 @@ Devflow: installing into /home/you/projects/demo-claude
   ✓  devflow/prompts/tests.txt
   ✓  devflow/prompts/review.txt
   ✓  devflow/prompts/verify.txt
-  ✓  .devflow/adapters/claude/README.md
+  ✓  .claude/commands/plan.md
+  ✓  .claude/commands/build.md
+  ✓  .claude/commands/tests.md
+  ✓  .claude/commands/review.md
+  ✓  .claude/commands/verify.md
 
 Done. Devflow installed successfully.
 ```
@@ -114,19 +118,20 @@ Done. Devflow installed successfully.
 ```sh
 ls AGENTS.md DEVFLOW.md
 ls devflow/prompts/
-ls .devflow/adapters/claude/
+ls .claude/commands/
 ```
 
 ### 4. Use the workflow
 
-This is a documentation adapter. The workflow is delivered through `AGENTS.md` and the reusable prompts.
+Open the project in Claude Code. In the AI chat panel:
 
-- Share `AGENTS.md` with the model at the start of each session
-- Use `devflow/prompts/plan.txt` before writing code
-- Use `devflow/prompts/review.txt` for a senior engineer review
-- Use `devflow/prompts/verify.txt` before finishing
+- `/plan implement a user authentication module` — generates an ordered implementation plan before writing any code
+- `/build` — implements the agreed plan with the minimum scope
+- `/tests` — generates test cases for the current file or selection
+- `/review` — reviews your latest changes as a senior engineer would
+- `/verify` — runs a pre-finish checklist (edge cases, error handling, types)
 
-See `.devflow/adapters/claude/README.md` for the full guide.
+See [docs/claude.md](../../docs/claude.md) for the full guide.
 
 ---
 
@@ -266,13 +271,14 @@ npx devflow init --adapters all
 ls AGENTS.md DEVFLOW.md
 ls devflow/prompts/
 ls .cursor/commands/ .cursor/rules/
+ls .claude/commands/
 ls .devflow/adapters/
 ```
 
 ### Commit the installed files
 
 ```sh
-git add AGENTS.md DEVFLOW.md devflow/ .devflow/ .cursor/
+git add AGENTS.md DEVFLOW.md devflow/ .devflow/ .cursor/ .claude/
 git commit -m "chore: add Devflow AI workflow files"
 ```
 
