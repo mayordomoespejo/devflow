@@ -234,6 +234,7 @@ function resolveAdapters(options, targetDir) {
 function inspectCore(targetDir) {
   const agentsMd = exists('AGENTS.md', targetDir);
   const devflowMd = exists('DEVFLOW.md', targetDir);
+  const workflowsConfig = exists(path.join('.devflow', 'workflows.yml'), targetDir);
   const promptsDir = exists(path.join('devflow', 'prompts'), targetDir);
   const planPrompt = exists(path.join('devflow', 'prompts', 'plan.txt'), targetDir);
   const promptFiles = Object.fromEntries(
@@ -250,6 +251,7 @@ function inspectCore(targetDir) {
   return {
     agentsMd,
     devflowMd,
+    workflowsConfig,
     prompts,
     promptFiles,
     missing,
@@ -403,6 +405,9 @@ function buildExplainSources(targetDir, inspection) {
   if (inspection.core.devflowMd) {
     sources.push(path.join(targetDir, 'DEVFLOW.md'));
   }
+  if (inspection.core.workflowsConfig) {
+    sources.push(path.join(targetDir, '.devflow', 'workflows.yml'));
+  }
   for (const workflow of PROMPT_WORKFLOWS) {
     if (inspection.core.promptFiles[workflow]) {
       sources.push(path.join(targetDir, 'devflow', 'prompts', `${workflow}.txt`));
@@ -474,6 +479,7 @@ function printDoctorHuman(report, options) {
   if (report.core.missing.length > 0) {
     console.log(`Missing core files: ${report.core.missing.join(', ')}`);
   }
+  console.log(`Custom workflow config present: ${report.core.workflowsConfig ? 'yes' : 'no'}`);
 
   const detectedAdapters = Object.entries(report.adapters)
     .filter(([, details]) => details.present)
@@ -538,6 +544,7 @@ function printExplainHuman(report, options) {
   console.log('');
   console.log(`Core: ${report.core.status === 'ok' ? 'OK' : 'MISSING'}`);
   console.log(`Core missing: ${missingCore}`);
+  console.log(`Custom workflow config present: ${report.core.workflowsConfig ? 'yes' : 'no'}`);
   console.log(`Adapters installed: ${detectedAdapters.length > 0 ? detectedAdapters.join(', ') : 'none'}`);
   console.log(`Workflows available: ${report.workflows.length > 0 ? report.workflows.join(', ') : 'none'}`);
   console.log('');

@@ -53,6 +53,7 @@ try {
 
   const emptyReport = runJson(['--target', emptyTarget]);
   check(emptyReport.core.status === 'missing', 'empty dir reports missing core', JSON.stringify(emptyReport.core));
+  check(emptyReport.core.workflowsConfig === false, 'empty dir reports no workflow config', JSON.stringify(emptyReport.core));
   check(emptyReport.workflows.length === 0, 'empty dir has no workflows', JSON.stringify(emptyReport.workflows));
   check(
     emptyReport.recommendations.includes(`devflow init --merge --target ${JSON.stringify(emptyTarget)}`),
@@ -64,8 +65,14 @@ try {
 
   const initializedReport = runJson(['--target', initializedTarget]);
   check(initializedReport.core.status === 'ok', 'initialized dir reports healthy core', JSON.stringify(initializedReport.core));
+  check(initializedReport.core.workflowsConfig === true, 'initialized dir detects workflow config', JSON.stringify(initializedReport.core));
   check(initializedReport.workflows.includes('plan'), 'initialized dir exposes plan workflow', JSON.stringify(initializedReport.workflows));
   check(initializedReport.adapters.generic.present === true, 'initialized dir detects generic adapter', JSON.stringify(initializedReport.adapters.generic));
+  check(
+    initializedReport.sources.some((source) => source.endsWith('.devflow/workflows.yml')),
+    'initialized dir includes workflows.yml in sources',
+    JSON.stringify(initializedReport.sources),
+  );
   check(
     initializedReport.sources.some((source) => source.endsWith('AGENTS.md')),
     'initialized dir includes AGENTS.md in sources',

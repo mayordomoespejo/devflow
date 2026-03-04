@@ -53,6 +53,7 @@ try {
 
   const emptyReport = runJson(['--target', emptyTarget]);
   check(emptyReport.core.status === 'missing', 'empty dir reports missing core', JSON.stringify(emptyReport.core));
+  check(emptyReport.core.workflowsConfig === false, 'empty dir reports no workflow config', JSON.stringify(emptyReport.core));
   check(
     emptyReport.issues.some((issue) => issue.id === 'devflow-not-installed'),
     'empty dir reports devflow-not-installed issue',
@@ -68,6 +69,7 @@ try {
 
   const initializedReport = runJson(['--target', initializedTarget]);
   check(initializedReport.core.status === 'ok', 'initialized dir reports healthy core', JSON.stringify(initializedReport.core));
+  check(initializedReport.core.workflowsConfig === true, 'initialized dir detects workflow config', JSON.stringify(initializedReport.core));
   check(initializedReport.adapters.generic.present === true, 'initialized dir detects generic adapter', JSON.stringify(initializedReport.adapters.generic));
   check(initializedReport.issues.length === 0, 'initialized dir has no issues', JSON.stringify(initializedReport.issues));
   check(
