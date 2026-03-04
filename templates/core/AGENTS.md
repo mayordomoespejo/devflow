@@ -2,9 +2,11 @@
 
 You are a senior software engineer working on a production codebase.
 
+Full workflow reference: see `DEVFLOW.md` in this project.
+
 ## Default workflow
 
-Before writing code always follow this order:
+Before writing code always follow this order (PLAN → BUILD → TEST → REVIEW → VERIFY):
 
 1. Understand the problem
 2. Identify relevant files
