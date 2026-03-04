@@ -4,14 +4,26 @@
 
 ```
 AGENTS.md
-CLAUDE.md
 .claude/
   commands/
     plan.md
     review.md
     tests.md
     verify.md
+  rules/
+    typescript.md
 ```
+
+## Setup checklist
+
+- [ ] `npx devflow init --tool claude` in the project root
+- [ ] `AGENTS.md` exists at the project root
+- [ ] `.claude/commands/` contains `plan.md`, `review.md`, `tests.md`, `verify.md`
+- [ ] `.claude/rules/typescript.md` exists
+- [ ] Open project with `claude` (Claude Code CLI) — commands are available immediately
+- [ ] Commit: `git add AGENTS.md .claude && git commit -m "chore: add Devflow Claude Code workflow"`
+
+---
 
 ## Install
 
@@ -19,71 +31,96 @@ CLAUDE.md
 npx devflow init --tool claude
 ```
 
-## CLAUDE.md vs AGENTS.md
-
-Both files are read by Claude Code automatically:
-
-| File | Read by | Purpose |
-|------|---------|---------|
-| `AGENTS.md` | Claude Code, Codex | Universal workflow — shared across all tools |
-| `CLAUDE.md` | Claude Code only | Claude-specific instructions: tool use, slash commands, destructive command policy |
-
-If you already have a `CLAUDE.md`, use `--merge` to avoid overwriting it:
+Preview first, then apply:
 
 ```sh
-npx devflow init --tool claude --merge
+npx devflow init --tool claude --dry-run
+npx devflow init --tool claude --force   # overwrite existing
 ```
 
-`--merge` installs only files that don't exist yet, so your custom `CLAUDE.md` stays untouched.
+---
 
-## Using the commands
+## How Claude Code reads instructions
 
-Type a slash command in the Claude Code chat:
+Claude Code loads instruction files hierarchically (all merged, later entries take precedence):
+
+1. `~/.claude/CLAUDE.md` — global, applies to all projects
+2. `<project>/AGENTS.md` — universal workflow, installed by Devflow at the project root
+3. `.claude/rules/typescript.md` — Always-on TypeScript rules, loaded from `.claude/rules/`
+
+`AGENTS.md` is the primary instruction source installed by Devflow. Claude Code reads it automatically from the project root.
+
+---
+
+## Slash commands
+
+Type any command in the Claude Code chat. Commands are picked up from `.claude/commands/` — no restart required after install.
 
 | Command | What it does |
 |---------|-------------|
-| `/plan <topic>` | Generates a step-by-step implementation plan |
-| `/review` | Reviews the current implementation as a senior engineer |
-| `/tests` | Generates test cases for the current implementation |
-| `/verify` | Checks correctness, edge cases, and simplicity before finishing |
+| `/plan` | Step-by-step implementation plan before writing code |
+| `/review` | Senior engineer code review of the current implementation |
+| `/tests` | Generate test cases for the current implementation |
+| `/verify` | Pre-finish checklist: edge cases, error handling, types |
 
-Commands accept an optional argument after the slash: `/plan add dark mode` passes "add dark mode" as `$ARGUMENTS` to the command template.
+**With an argument:**
 
-Commands live in `.claude/commands/`. Claude Code picks them up without restart.
-
-## Customising CLAUDE.md
-
-`CLAUDE.md` supports hierarchical loading:
-
-- `~/.claude/CLAUDE.md` — global, applies to all projects
-- `<project>/CLAUDE.md` — project-level, installed by Devflow
-
-Add project-specific instructions directly to `<project>/CLAUDE.md`. Devflow manages only the content it installed; the rest is yours.
-
-## Updating Devflow files
-
-```sh
-# Preview what would change
-npx devflow init --tool claude --dry-run
-
-# Overwrite with the latest templates
-npx devflow init --tool claude --force
 ```
+/plan implement a paginated API endpoint
+/tests for the UserRepository class
+```
+
+The text after the command name is passed as `$ARGUMENTS` to the command template.
+
+---
+
+## TypeScript rules
+
+`.claude/rules/typescript.md` is applied as an Always-on rule. It enforces:
+
+- Explicit types — no `any`, no implicit types
+- Early returns over nested conditions
+- Small, pure functions
+
+Rules in `.claude/rules/` are loaded automatically by Claude Code for every conversation in the project.
+
+---
+
+## Adding project-specific instructions
+
+To add your own instructions without modifying Devflow-managed files, create a `CLAUDE.md` at the project root:
+
+```md
+# Project instructions
+
+Use pnpm instead of npm.
+Prefer Zod for input validation at system boundaries.
+```
+
+Claude Code reads `CLAUDE.md` alongside `AGENTS.md`. Devflow does not install or manage `CLAUDE.md`, so you own it completely.
+
+---
 
 ## Troubleshooting
 
-**CLAUDE.md not being read**
-- Confirm it's at the project root (same level as `package.json` or `.git`).
-- Claude Code loads `CLAUDE.md` from the working directory and parent directories up to the git root.
+**Commands don't appear in the chat panel**
+- Confirm `.claude/commands/` exists at the project root (same level as `.git`).
+- Commands are auto-discovered — no configuration required.
+- Run `claude` from the project root, not a parent directory.
 
-**Commands don't appear**
-- Confirm `.claude/commands/` exists at the project root.
-- Commands are auto-discovered — no restart required.
+**TypeScript rule not applying**
+- Confirm the file is at `.claude/rules/typescript.md`.
+- Rules in `.claude/rules/` are loaded automatically for every project session.
 
-**`/plan` outputs nothing useful**
+**`/plan` produces no useful output**
 - Pass a topic: `/plan implement user authentication`.
-- If you get an empty `$ARGUMENTS` substitution, the command template still works — it uses the current conversation context.
+- If `$ARGUMENTS` is empty, the command still uses the current conversation context.
+
+**AGENTS.md not being read**
+- Confirm `AGENTS.md` is at the project root.
+- Claude Code reads it from the working directory up to the git root.
 
 **Conflict on re-install**
-- Use `--force` to overwrite: `npx devflow init --tool claude --force`
-- Use `--merge` to skip existing files: `npx devflow init --tool claude --merge`
+- `npx devflow init --tool claude --dry-run` — preview what changes
+- `npx devflow init --tool claude --force` — overwrite Devflow-managed files
+- `npx devflow init --tool claude --merge` — skip existing, add only new files

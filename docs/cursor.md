@@ -14,60 +14,86 @@ AGENTS.md
     typescript.md
 ```
 
+## Setup checklist
+
+- [ ] `npx devflow init --tool cursor` in the project root
+- [ ] `AGENTS.md` exists at the project root
+- [ ] `.cursor/commands/` contains `plan.md`, `review.md`, `tests.md`, `verify.md`
+- [ ] `.cursor/rules/typescript.md` exists
+- [ ] Open project in Cursor — commands are available immediately, no restart needed
+- [ ] Commit: `git add AGENTS.md .cursor && git commit -m "chore: add Devflow Cursor workflow"`
+
+---
+
 ## Install
 
 ```sh
 npx devflow init --tool cursor
 ```
 
-## Using the commands
+Preview first, then apply:
 
-Open any file in Cursor and type a slash command in the chat:
+```sh
+npx devflow init --tool cursor --dry-run
+npx devflow init --tool cursor --force   # overwrite existing
+```
+
+---
+
+## Slash commands
+
+Type any command in the Cursor chat panel. No restart required after install.
 
 | Command | What it does |
 |---------|-------------|
-| `/plan` | Generates a step-by-step implementation plan before writing code |
-| `/review` | Reviews the current implementation as a senior engineer |
-| `/tests` | Generates test cases for the current implementation |
-| `/verify` | Checks correctness, edge cases, and simplicity before finishing |
+| `/plan` | Step-by-step implementation plan before writing code |
+| `/review` | Senior engineer code review of the current implementation |
+| `/tests` | Generate test cases for the current implementation |
+| `/verify` | Pre-finish checklist: edge cases, error handling, types |
 
-> Commands are stored in `.cursor/commands/`. Cursor picks them up automatically — no restart required.
+**With an argument:**
+
+```
+/plan add a rate limiter to the API
+/tests for the AuthService class
+```
+
+The text after the command name is passed as context to the template.
+
+Commands live in `.cursor/commands/`. Cursor auto-discovers any `.md` file placed there — add your own by dropping additional files into that directory.
+
+---
 
 ## TypeScript rules
 
-`typescript.md` is a Cursor rule that applies to all TypeScript files. It enforces:
+`.cursor/rules/typescript.md` is applied as an Always-on rule across all conversations. It enforces:
 
-- Explicit types (no `any`, no implicit types)
+- Explicit types — no `any`, no implicit types
 - Early returns over nested conditions
-- Small pure functions
+- Small, pure functions
 
-Rules live in `.cursor/rules/`. Cursor applies them as Always-on rules by default (plain `.md` format). To use activation modes (Auto Attach by glob, Agent Requested, Manual), convert the file to `.mdc` format and add YAML front matter — see [Cursor rules docs](https://cursor.com/docs/context/rules).
+**Scope:** Always-on (global by default). To scope a rule to specific files, rename it to `.mdc` and add a `globs` field in YAML front matter — see the [Cursor rules docs](https://docs.cursor.com/context/rules).
+
+---
 
 ## AGENTS.md
 
-`AGENTS.md` is a universal instruction file. Cursor does not read it directly, but other tools installed alongside (Claude Code, Codex) will use it. Keep it in your repo for cross-tool consistency.
+`AGENTS.md` sits at the project root and contains the universal engineering principles shared across all tools. Cursor does not read it natively, but keeping it in the repo ensures teammates using Claude Code or Codex get the same baseline instructions.
 
-## Updating Devflow files
-
-```sh
-# Preview what would change
-npx devflow init --tool cursor --dry-run
-
-# Overwrite with the latest templates
-npx devflow init --tool cursor --force
-```
+---
 
 ## Troubleshooting
 
-**Commands don't appear in Cursor**
-- Confirm `.cursor/commands/` exists in your project root.
-- Cursor auto-discovers command files — if they're there, they should appear.
-- Restart Cursor if they still don't show up.
+**Commands don't appear in the chat panel**
+- Confirm `.cursor/commands/` is at the project root (same level as `.git`).
+- Cursor auto-discovers command files — no configuration required.
+- Restart Cursor if they still don't appear after confirming the files exist.
 
 **TypeScript rule not applying**
-- Check the file is at `.cursor/rules/typescript.md`.
-- Rules in `.md` format apply as Always-on globally. If you want glob-scoped rules, rename to `.mdc` and add front matter.
+- Confirm the file path is `.cursor/rules/typescript.md` (not `.mdc`).
+- `.md` rules are Always-on globally. For Auto Attach by glob or Agent Requested mode, rename to `.mdc` with the appropriate front matter.
 
 **Conflict on re-install**
-- Use `--force` to overwrite: `npx devflow init --tool cursor --force`
-- Use `--dry-run` first to see what would change.
+- `npx devflow init --tool cursor --dry-run` — preview what changes
+- `npx devflow init --tool cursor --force` — overwrite Devflow-managed files
+- `npx devflow init --tool cursor --merge` — skip existing, add only new files
