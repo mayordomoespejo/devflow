@@ -50,6 +50,26 @@ const CORE_KEY_FILES = [
   path.join('devflow', 'prompts', 'review.txt'),
   path.join('devflow', 'prompts', 'verify.txt'),
 ];
+const DOCTOR_ADAPTERS = {
+  cursor: {
+    expected: [
+      path.join('.cursor', 'commands', 'plan.md'),
+      path.join('.cursor', 'commands', 'tests.md'),
+      path.join('.cursor', 'commands', 'review.md'),
+      path.join('.cursor', 'commands', 'verify.md'),
+      path.join('.cursor', 'rules', 'typescript.md'),
+    ],
+  },
+  generic: {
+    expected: [path.join('.devflow', 'README.md')],
+  },
+  'claude-code': {
+    expected: [path.join('.devflow', 'adapters', 'claude-code', 'README.md')],
+  },
+  codex: {
+    expected: [path.join('.devflow', 'adapters', 'codex', 'README.md')],
+  },
+};
 
 // Paths Devflow is allowed to create or overwrite.
 // --force will never touch files outside these prefixes.
@@ -164,6 +184,10 @@ function copyItem({ src, dest }, targetDir) {
   fs.copyFileSync(src, destPath);
 }
 
+function hasAnyPath(targetDir, paths) {
+  return paths.some((rel) => exists(rel, targetDir));
+}
+
 // Checks core files (always) + one key file per selected adapter.
 function validate(adapters, targetDir) {
   const failures = [];
@@ -204,6 +228,201 @@ function resolveAdapters(options, targetDir) {
   }
 
   return parseAdapterList(adapterArg);
+}
+
+function inspectCore(targetDir) {
+  const agentsMd = exists('AGENTS.md', targetDir);
+  const devflowMd = exists('DEVFLOW.md', targetDir);
+  const promptsDir = exists(path.join('devflow', 'prompts'), targetDir);
+  const planPrompt = exists(path.join('devflow', 'prompts', 'plan.txt'), targetDir);
+  const prompts = promptsDir && planPrompt;
+  const missing = [];
+
+  if (!agentsMd) missing.push('AGENTS.md');
+  if (!devflowMd) missing.push('DEVFLOW.md');
+  if (!promptsDir) missing.push(path.join('devflow', 'prompts'));
+  if (promptsDir && !planPrompt) missing.push(path.join('devflow', 'prompts', 'plan.txt'));
+
+  return {
+    agentsMd,
+    devflowMd,
+    prompts,
+    missing,
+    status: missing.length === 0 ? 'ok' : 'missing',
+  };
+}
+
+function inspectAdapter(name, targetDir) {
+  const expected = DOCTOR_ADAPTERS[name].expected;
+  const missing = expected.filter((rel) => !exists(rel, targetDir));
+  const present = hasAnyPath(targetDir, expected);
+
+  return {
+    present,
+    missing,
+    expected,
+    status: !present ? 'absent' : missing.length === 0 ? 'ok' : 'partial',
+  };
+}
+
+function inspectInstallation(targetDir) {
+  const core = inspectCore(targetDir);
+  const adapters = {};
+
+  for (const adapter of Object.keys(DOCTOR_ADAPTERS)) {
+    adapters[adapter] = inspectAdapter(adapter, targetDir);
+  }
+
+  return {
+    core,
+    adapters,
+    detectedAdapters: Object.entries(adapters)
+      .filter(([, details]) => details.present)
+      .map(([name]) => name),
+  };
+}
+
+function severityRank(severity) {
+  return severity === 'error' ? 0 : 1;
+}
+
+function buildRecommendationCommand(targetDir, cwd, adapters) {
+  const parts = ['devflow', 'init'];
+
+  if (adapters.length === 1) {
+    parts.push('--adapter', adapters[0]);
+  } else if (adapters.length > 1) {
+    parts.push('--adapters', adapters.join(','));
+  }
+
+  parts.push('--merge');
+
+  if (path.resolve(targetDir) !== path.resolve(cwd)) {
+    parts.push('--target', JSON.stringify(targetDir));
+  }
+
+  return parts.join(' ');
+}
+
+function buildDoctorReport(targetDir, cwd) {
+  const inspection = inspectInstallation(targetDir);
+  const issues = [];
+  const recommendations = [];
+  const detectedAdapters = inspection.detectedAdapters;
+  const partiallyInstalledAdapters = Object.entries(inspection.adapters)
+    .filter(([, details]) => details.status === 'partial')
+    .map(([name]) => name);
+  const anyDevflowPresence = inspection.core.agentsMd
+    || inspection.core.devflowMd
+    || inspection.core.prompts
+    || detectedAdapters.length > 0;
+
+  if (!anyDevflowPresence) {
+    issues.push({
+      id: 'devflow-not-installed',
+      severity: 'error',
+      message: 'Devflow does not appear to be installed in the target.',
+      fix: buildRecommendationCommand(targetDir, cwd, []),
+    });
+    recommendations.push(buildRecommendationCommand(targetDir, cwd, []));
+  } else {
+    if (inspection.core.missing.length > 0) {
+      const coreAdapters = detectedAdapters.length > 0 ? detectedAdapters : [];
+      issues.push({
+        id: 'core-missing',
+        severity: 'error',
+        message: `Core installation is incomplete. Missing: ${inspection.core.missing.join(', ')}`,
+        fix: buildRecommendationCommand(targetDir, cwd, coreAdapters),
+      });
+      recommendations.push(buildRecommendationCommand(targetDir, cwd, coreAdapters));
+    }
+
+    for (const adapter of partiallyInstalledAdapters) {
+      issues.push({
+        id: `${adapter}-partial`,
+        severity: 'warn',
+        message: `${adapter} adapter is partially installed. Missing: ${inspection.adapters[adapter].missing.join(', ')}`,
+        fix: buildRecommendationCommand(targetDir, cwd, [adapter]),
+      });
+      recommendations.push(buildRecommendationCommand(targetDir, cwd, [adapter]));
+    }
+  }
+
+  if (issues.length === 0) {
+    recommendations.push('No action needed.');
+  }
+
+  issues.sort((a, b) => severityRank(a.severity) - severityRank(b.severity));
+
+  return {
+    version: pkg.version,
+    target: targetDir,
+    core: inspection.core,
+    adapters: inspection.adapters,
+    issues,
+    recommendations: [...new Set(recommendations)],
+  };
+}
+
+function printDoctorHuman(report, options) {
+  console.log('Devflow doctor');
+  console.log(`Version: ${report.version}`);
+  console.log(`Target: ${report.target}`);
+  console.log('');
+  console.log(`Core: ${report.core.status === 'ok' ? 'OK' : 'MISSING'}`);
+  if (report.core.missing.length > 0) {
+    console.log(`Missing core files: ${report.core.missing.join(', ')}`);
+  }
+
+  const detectedAdapters = Object.entries(report.adapters)
+    .filter(([, details]) => details.present)
+    .map(([name]) => name);
+
+  console.log(`Adapters detected: ${detectedAdapters.length > 0 ? detectedAdapters.join(', ') : 'none'}`);
+
+  if (options.verbose) {
+    console.log('');
+    console.log('Adapter details:');
+    for (const [name, details] of Object.entries(report.adapters)) {
+      console.log(`- ${name}: ${details.status}`);
+      if (details.missing.length > 0) {
+        console.log(`  missing: ${details.missing.join(', ')}`);
+      }
+    }
+  }
+
+  console.log('');
+  console.log('Issues:');
+  if (report.issues.length === 0) {
+    console.log('- none');
+  } else {
+    for (const issue of report.issues) {
+      console.log(`- [${issue.severity}] ${issue.message}`);
+    }
+  }
+
+  console.log('');
+  console.log('Recommended next command(s):');
+  for (const recommendation of report.recommendations) {
+    console.log(`- ${recommendation}`);
+  }
+
+  if (options.fix) {
+    console.log('');
+    console.log('Fix mode: no automatic safe fixes are available. Use the recommended command manually.');
+  }
+}
+
+function runDoctor(options) {
+  const targetDir = resolveTarget(options.target || process.cwd());
+  const report = buildDoctorReport(targetDir, process.cwd());
+
+  if (options.json) {
+    process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+    return;
+  }
+
+  printDoctorHuman(report, options);
 }
 
 // ─── init command ────────────────────────────────────────────────────────────
@@ -323,5 +542,14 @@ program
     'deprecated alias for --adapter',
   )
   .action(runInit);
+
+program
+  .command('doctor')
+  .description('Diagnose the Devflow installation in the current project or another target')
+  .option('-t, --target <path>', 'inspect a different directory', process.cwd())
+  .option('-j, --json', 'output JSON only')
+  .option('-f, --fix', 'show safe fix guidance when issues are found')
+  .option('--verbose', 'include adapter details and missing files')
+  .action(runDoctor);
 
 program.parse(process.argv);
