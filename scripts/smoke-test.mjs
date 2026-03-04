@@ -79,26 +79,26 @@ try {
   check(join(targets.cursor, '.cursor', 'rules', 'typescript.md'), '.cursor/rules/typescript.md');
 
   section('claude target');
-  check(join(targets.claude, 'AGENTS.md'),                     'AGENTS.md');
-  check(join(targets.claude, 'CLAUDE.md'),                     'CLAUDE.md');
-  check(join(targets.claude, '.claude', 'commands', 'plan.md'), '.claude/commands/plan.md');
-  check(join(targets.claude, '.claude', 'commands', 'review.md'), '.claude/commands/review.md');
+  check(join(targets.claude, 'AGENTS.md'),                          'AGENTS.md');
+  check(join(targets.claude, '.claude', 'commands', 'plan.md'),     '.claude/commands/plan.md');
+  check(join(targets.claude, '.claude', 'commands', 'review.md'),   '.claude/commands/review.md');
+  check(join(targets.claude, '.claude', 'rules', 'typescript.md'),  '.claude/rules/typescript.md');
 
   section('codex target');
-  check(join(targets.codex, 'AGENTS.md'),          'AGENTS.md');
-  check(join(targets.codex, '.codex', 'README.md'), '.codex/README.md');
+  check(join(targets.codex, 'AGENTS.md'),                'AGENTS.md');
+  check(join(targets.codex, '.codex', 'INSTRUCTIONS.md'), '.codex/INSTRUCTIONS.md');
 
   section('gemini target');
-  check(join(targets.gemini, 'AGENTS.md'),  'AGENTS.md');
-  check(join(targets.gemini, 'GEMINI.md'),  'GEMINI.md');
+  check(join(targets.gemini, 'AGENTS.md'),                  'AGENTS.md');
+  check(join(targets.gemini, '.gemini', 'INSTRUCTIONS.md'), '.gemini/INSTRUCTIONS.md');
 
   section('all target');
-  check(join(targets.all, 'AGENTS.md'),                      'AGENTS.md');
-  check(join(targets.all, '.cursor', 'commands', 'plan.md'), '.cursor/commands/plan.md');
-  check(join(targets.all, 'CLAUDE.md'),                      'CLAUDE.md');
-  check(join(targets.all, '.claude', 'commands', 'plan.md'), '.claude/commands/plan.md');
-  check(join(targets.all, '.codex', 'README.md'),            '.codex/README.md');
-  check(join(targets.all, 'GEMINI.md'),                      'GEMINI.md');
+  check(join(targets.all, 'AGENTS.md'),                                 'AGENTS.md');
+  check(join(targets.all, '.cursor', 'commands', 'plan.md'),            '.cursor/commands/plan.md');
+  check(join(targets.all, '.claude', 'commands', 'plan.md'),            '.claude/commands/plan.md');
+  check(join(targets.all, '.claude', 'rules', 'typescript.md'),         '.claude/rules/typescript.md');
+  check(join(targets.all, '.codex', 'INSTRUCTIONS.md'),                 '.codex/INSTRUCTIONS.md');
+  check(join(targets.all, '.gemini', 'INSTRUCTIONS.md'),                '.gemini/INSTRUCTIONS.md');
 
 } finally {
   rmSync(tmp, { recursive: true, force: true });

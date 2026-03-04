@@ -27,12 +27,12 @@ const TOOL_CONFIG = {
   codex: {
     srcDir:  'codex',
     destDir: '.codex',
-    keyFile: path.join('.codex', 'README.md'),
+    keyFile: path.join('.codex', 'INSTRUCTIONS.md'),
   },
   gemini: {
     srcDir:  'gemini',
-    destDir: '',
-    keyFile: 'GEMINI.md',
+    destDir: '.gemini',
+    keyFile: path.join('.gemini', 'INSTRUCTIONS.md'),
   },
 };
 

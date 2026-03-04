@@ -1,14 +1,15 @@
 {
   "name": "devflow",
   "version": "0.1.0",
-  "description": "AI-assisted development toolkit CLI for Cursor",
+  "description": "AI-assisted development toolkit for Cursor, Claude Code, Codex, and Gemini",
   "main": "src/cli.js",
   "bin": {
     "devflow": "src/cli.js"
   },
   "scripts": {
     "dev": "node src/cli.js",
-    "test": "node scripts/smoke-test.mjs"
+    "validate": "node scripts/validate-templates.mjs",
+    "test": "node scripts/validate-templates.mjs && node scripts/smoke-test.mjs"
   },
   "keywords": [
     "cursor",
