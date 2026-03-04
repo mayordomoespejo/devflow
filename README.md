@@ -66,7 +66,7 @@ Adapters are optional and exist only to make the core easier to use in a specifi
 
 - `cursor` installs Cursor-facing command and rule files
 - `generic` installs usage instructions for any unsupported chat or IDE
-- `claude-code` and `codex` currently install guidance under `.devflow/adapters/` without inventing unsupported config
+- `claude`, `codex`, `gemini`, and `anthropic` currently install guidance under `.devflow/adapters/` without inventing unsupported config
 
 If Devflow does not know a tool's official integration format, it does not fake one.
 
@@ -201,8 +201,10 @@ Current adapter model:
 | --- | --- | --- |
 | `cursor` | config-backed adapter | `.cursor/commands/`, `.cursor/rules/` |
 | `generic` | documentation adapter | `.devflow/README.md` |
-| `claude-code` | documentation adapter | `.devflow/adapters/claude-code/README.md` |
+| `claude` | documentation adapter | `.devflow/adapters/claude/README.md` |
 | `codex` | documentation adapter | `.devflow/adapters/codex/README.md` |
+| `gemini` | documentation adapter | `.devflow/adapters/gemini/README.md` |
+| `anthropic` | documentation adapter | `.devflow/adapters/anthropic/README.md` |
 
 This keeps the product honest:
 
@@ -281,7 +283,7 @@ This validates the template contract and runs the CLI smoke test.
 
 - [Anywhere](docs/anywhere.md)
 - [Cursor](docs/cursor.md)
-- [Claude Code](docs/claude-code.md)
+- [Claude](docs/claude.md)
 - [Codex](docs/codex.md)
 
 ## License

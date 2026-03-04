@@ -35,8 +35,10 @@ const REQUIRED_CURSOR_ADAPTER = [
 ];
 
 const REQUIRED_GUIDE_ADAPTERS = [
-  'adapters/claude-code/README.md',
+  'adapters/anthropic/README.md',
+  'adapters/claude/README.md',
   'adapters/codex/README.md',
+  'adapters/gemini/README.md',
   'adapters/generic/README.md',
 ];
 

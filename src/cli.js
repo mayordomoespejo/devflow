@@ -18,15 +18,25 @@ const ADAPTER_CONFIG = {
     destDir: '',
     keyFile: path.join('.cursor', 'commands', 'plan.md'),
   },
-  'claude-code': {
-    srcDir:  path.join('adapters', 'claude-code'),
-    destDir: path.join('.devflow', 'adapters', 'claude-code'),
-    keyFile: path.join('.devflow', 'adapters', 'claude-code', 'README.md'),
+  claude: {
+    srcDir:  path.join('adapters', 'claude'),
+    destDir: path.join('.devflow', 'adapters', 'claude'),
+    keyFile: path.join('.devflow', 'adapters', 'claude', 'README.md'),
   },
   codex: {
     srcDir:  path.join('adapters', 'codex'),
     destDir: path.join('.devflow', 'adapters', 'codex'),
     keyFile: path.join('.devflow', 'adapters', 'codex', 'README.md'),
+  },
+  gemini: {
+    srcDir:  path.join('adapters', 'gemini'),
+    destDir: path.join('.devflow', 'adapters', 'gemini'),
+    keyFile: path.join('.devflow', 'adapters', 'gemini', 'README.md'),
+  },
+  anthropic: {
+    srcDir:  path.join('adapters', 'anthropic'),
+    destDir: path.join('.devflow', 'adapters', 'anthropic'),
+    keyFile: path.join('.devflow', 'adapters', 'anthropic', 'README.md'),
   },
   generic: {
     srcDir:  path.join('adapters', 'generic'),
@@ -35,9 +45,7 @@ const ADAPTER_CONFIG = {
   },
 };
 
-const ADAPTER_ALIASES = {
-  claude: 'claude-code',
-};
+const ADAPTER_ALIASES = {};
 
 const ALL_ADAPTERS = Object.keys(ADAPTER_CONFIG);
 const DEFAULT_CURSOR_MARKER = '.cursor';
@@ -64,11 +72,17 @@ const DOCTOR_ADAPTERS = {
   generic: {
     expected: [path.join('.devflow', 'README.md')],
   },
-  'claude-code': {
-    expected: [path.join('.devflow', 'adapters', 'claude-code', 'README.md')],
+  claude: {
+    expected: [path.join('.devflow', 'adapters', 'claude', 'README.md')],
   },
   codex: {
     expected: [path.join('.devflow', 'adapters', 'codex', 'README.md')],
+  },
+  gemini: {
+    expected: [path.join('.devflow', 'adapters', 'gemini', 'README.md')],
+  },
+  anthropic: {
+    expected: [path.join('.devflow', 'adapters', 'anthropic', 'README.md')],
   },
 };
 

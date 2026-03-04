@@ -132,6 +132,6 @@ Current adapter status:
 | Harness | Integration |
 |---------|-------------|
 | Cursor | `/plan`, `/review`, `/tests`, `/verify` slash commands |
-| Claude Code | Documentation-only adapter. Follow `templates/adapters/claude-code/README.md` |
+| Claude | Documentation-only adapter. Follow `templates/adapters/claude/README.md` |
 | Codex CLI | Documentation-only adapter. Follow `templates/adapters/codex/README.md` |
 | Any other | Use `templates/adapters/generic/README.md` and copy prompts from `devflow/prompts/` |
