@@ -52,9 +52,9 @@ function section(title) {
 const tmp = mkdtempSync(join(tmpdir(), 'devflow-smoke-'));
 const targets = {};
 
-for (const tool of ['cursor', 'claude', 'codex', 'gemini', 'generic', 'all']) {
-  targets[tool] = join(tmp, tool);
-  mkdirSync(targets[tool]);
+for (const install of ['core', 'cursor', 'claude', 'codex', 'gemini', 'generic', 'all']) {
+  targets[install] = join(tmp, install);
+  mkdirSync(targets[install]);
 }
 
 console.log(`Devflow smoke test`);
@@ -64,12 +64,13 @@ console.log(`Temp dir: ${tmp}`);
 
 try {
   section('Installs');
-  run('cursor',  `init --tool cursor  --target "${targets.cursor}"  --merge`);
-  run('claude',  `init --tool claude  --target "${targets.claude}"  --merge`);
-  run('codex',   `init --tool codex   --target "${targets.codex}"   --merge`);
-  run('gemini',  `init --tool gemini  --target "${targets.gemini}"  --merge`);
-  run('generic', `init --tool generic --target "${targets.generic}" --merge`);
-  run('all',     `init --tool all     --target "${targets.all}"     --merge`);
+  run('core',    `init                  --target "${targets.core}"    --merge`);
+  run('cursor',  `init --adapter cursor  --target "${targets.cursor}"  --merge`);
+  run('claude',  `init --adapter claude  --target "${targets.claude}"  --merge`);
+  run('codex',   `init --adapter codex   --target "${targets.codex}"   --merge`);
+  run('gemini',  `init --adapter gemini  --target "${targets.gemini}"  --merge`);
+  run('generic', `init --adapter generic --target "${targets.generic}" --merge`);
+  run('all',     `init --adapter all     --target "${targets.all}"     --merge`);
 
   // ─── checks ────────────────────────────────────────────────────────────────
 
@@ -79,6 +80,7 @@ try {
     check(join(dir, 'AGENTS.md'),                        'AGENTS.md');
     check(join(dir, 'DEVFLOW.md'),                       'DEVFLOW.md');
     check(join(dir, 'devflow', 'prompts', 'plan.md'),    'devflow/prompts/plan.md');
+    check(join(dir, 'devflow', 'prompts', 'review.md'),  'devflow/prompts/review.md');
   }
 
   section('cursor target');

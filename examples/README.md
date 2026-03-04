@@ -10,10 +10,10 @@ No frameworks or extra dependencies required — only Node.js 18+ and your AI to
 
 | Route | Tool | What gets installed |
 |-------|------|---------------------|
-| [Cursor](#cursor) | Cursor IDE | `AGENTS.md` · `.cursor/commands/` · `.cursor/rules/` |
-| [Claude Code](#claude-code) | Claude Code CLI | `AGENTS.md` · `.claude/commands/` · `.claude/rules/` |
-| [Codex](#codex-cli) | OpenAI Codex CLI | `AGENTS.md` · `.codex/INSTRUCTIONS.md` |
-| [Gemini](#gemini-cli) | Google Gemini CLI | `AGENTS.md` · `.gemini/INSTRUCTIONS.md` |
+| [Cursor](#cursor) | Cursor IDE | core files + `.cursor/commands/` + `.cursor/rules/` |
+| [Claude Code](#claude-code) | Claude Code CLI | core files + `.claude/commands/` + `.claude/rules/` |
+| [Codex](#codex-cli) | OpenAI Codex CLI | core files + `.codex/INSTRUCTIONS.md` |
+| [Gemini](#gemini-cli) | Google Gemini CLI | core files + `.gemini/INSTRUCTIONS.md` |
 
 See [sample-project/README.md](sample-project/README.md) for the full walkthrough (create repo → install → verify → use).
 
@@ -24,7 +24,7 @@ See [sample-project/README.md](sample-project/README.md) for the full walkthroug
 ```sh
 mkdir /tmp/demo-cursor && cd /tmp/demo-cursor
 git init
-npx devflow init --tool cursor
+npx devflow init --adapter cursor
 ```
 
 Expected files:
@@ -56,7 +56,7 @@ ls AGENTS.md .cursor/commands/plan.md .cursor/rules/typescript.md
 ```sh
 mkdir /tmp/demo-claude && cd /tmp/demo-claude
 git init
-npx devflow init --tool claude
+npx devflow init --adapter claude
 ```
 
 Expected files:
@@ -88,7 +88,7 @@ ls AGENTS.md .claude/commands/plan.md .claude/rules/typescript.md
 ```sh
 mkdir /tmp/demo-codex && cd /tmp/demo-codex
 git init
-npx devflow init --tool codex
+npx devflow init --adapter codex
 ```
 
 Expected files:
@@ -116,7 +116,7 @@ ls AGENTS.md .codex/INSTRUCTIONS.md
 ```sh
 mkdir /tmp/demo-gemini && cd /tmp/demo-gemini
 git init
-npx devflow init --tool gemini
+npx devflow init --adapter gemini
 ```
 
 Expected files:
@@ -133,7 +133,7 @@ AGENTS.md
 ls AGENTS.md .gemini/INSTRUCTIONS.md
 ```
 
-**Use:** Gemini reads `AGENTS.md` at session start. The `.gemini/INSTRUCTIONS.md` is a reference doc explaining the override pattern and what Gemini supports.
+**Use:** Gemini reads `GEMINI.md`, not `AGENTS.md`, at session start. Use `.gemini/INSTRUCTIONS.md` to map the Devflow core into a project `GEMINI.md`.
 
 > To customise behaviour without editing the Devflow-managed file, create `AGENTS.override.md` at the project root.
 
@@ -146,13 +146,13 @@ mkdir /tmp/demo-all && cd /tmp/demo-all
 git init
 
 # Install everything at once
-npx devflow init
+npx devflow init --adapter all
 
-# Or layer tools one by one (--merge skips AGENTS.md on the second run)
-npx devflow init --tool cursor
-npx devflow init --tool claude --merge
-npx devflow init --tool codex  --merge
-npx devflow init --tool gemini --merge
+# Or layer adapters one by one (--merge skips existing files)
+npx devflow init --adapter cursor
+npx devflow init --adapter claude --merge
+npx devflow init --adapter codex  --merge
+npx devflow init --adapter gemini --merge
 ```
 
 ---
@@ -162,5 +162,5 @@ npx devflow init --tool gemini --merge
 Use `--dry-run` to see what would be written without touching anything:
 
 ```sh
-npx devflow init --tool claude --dry-run
+npx devflow init --adapter claude --dry-run
 ```

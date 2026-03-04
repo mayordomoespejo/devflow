@@ -1,267 +1,177 @@
 # Devflow
 
-Opinionated AI workflow kit for software teams. One command installs a consistent set of instructions, slash commands, and coding rules into your project — ready for Cursor, Claude Code, Codex CLI, and Gemini CLI.
+Portable AI development workflow for real projects.
+
+Devflow standardises how you work with AI to build software: `PLAN -> BUILD -> TEST -> REVIEW -> VERIFY`. It gives you a small universal core you can install in any repository, then optional adapters for tools like Cursor, Claude Code, Codex, Gemini, or plain chat interfaces.
 
 ```sh
 npx devflow init
 ```
 
----
+## What problem it solves
 
-## Quick start (30 seconds)
+Without a shared workflow, AI-assisted development tends to drift:
+
+- every project ends up with different prompts
+- quality depends on the current model or tool
+- agents jump into code before understanding the task
+- tests, review, and edge-case checks are inconsistent
+- long sessions lose context and engineering discipline
+
+Devflow makes the process repeatable, regardless of model or interface.
+
+## Product model
+
+Devflow has two layers:
+
+- Core: always installed, model-agnostic, tool-agnostic
+- Adapters: optional integrations for specific tools
+
+The core is the actual product. Adapters only map that core into the conventions of each tool.
+
+## What `devflow init` installs
+
+By default, `npx devflow init` installs the universal core only:
+
+- `AGENTS.md` - baseline agent behaviour and engineering principles
+- `DEVFLOW.md` - the workflow reference
+- `devflow/prompts/` - reusable prompts for `plan`, `tests`, `review`, and `verify`
+
+Add an adapter when you want native integration:
 
 ```sh
-# Install everything into the current project
-npx devflow init
-
-# Or pick just the tools you use
-npx devflow init --tool cursor
-npx devflow init --tool claude
-npx devflow init --tool codex
-npx devflow init --tool gemini
+npx devflow init --adapter cursor
+npx devflow init --adapter claude
+npx devflow init --adapter codex
+npx devflow init --adapter gemini
+npx devflow init --adapter generic
 ```
 
-**Recommended flow for new projects:**
+Install everything explicitly:
 
 ```sh
-# 1. Run once — installs all tool targets
-npx devflow init
-
-# 2. Commit the installed files alongside your code
-git add AGENTS.md .cursor .claude .codex .gemini
-git commit -m "chore: add Devflow AI workflow files"
-
-# 3. When Devflow releases updates, refresh with --force
-npx devflow init --force
+npx devflow init --adapter all
 ```
 
----
+`--tool` remains available as a backward-compatible alias for `--adapter`.
 
-## What it installs
+## Quick start
 
-Every install always includes:
-
-- **`AGENTS.md`** — universal engineering principles, workflow steps, and code quality rules (read by all four tools)
-
-Then, per tool:
-
-| Tool | Target dir | Installed files |
-|------|-----------|-----------------|
-| `cursor` | `.cursor/` | 4 slash commands + TypeScript rules |
-| `claude` | `.claude/` | 4 slash commands + TypeScript rules |
-| `codex` | `.codex/` | Reference doc (instruction-based, no commands) |
-| `gemini` | `.gemini/` | Reference doc (instruction-based, no commands) |
-
----
-
-## Tool support
-
-| Tool | Installed files | What you get | Limitations |
-|------|----------------|--------------|-------------|
-| **Cursor** | `AGENTS.md` · `.cursor/commands/` · `.cursor/rules/` | `/plan` `/review` `/tests` `/verify` slash commands + always-on TypeScript rules | — |
-| **Claude Code** | `AGENTS.md` · `.claude/commands/` · `.claude/rules/` | `/plan` `/review` `/tests` `/verify` slash commands + TypeScript rules | — |
-| **Codex CLI** | `AGENTS.md` · `.codex/INSTRUCTIONS.md` | Universal workflow via `AGENTS.md`; reference doc in `.codex/` | Instruction-based only — no commands, no rules files |
-| **Gemini CLI** | `AGENTS.md` · `.gemini/INSTRUCTIONS.md` | Universal workflow via `AGENTS.md`; reference doc in `.gemini/` | Instruction-based only — no commands, no rules files |
-
-### Files installed per tool
-
-#### `--tool cursor`
-| Destination | Purpose |
-|-------------|---------|
-| `AGENTS.md` | Universal workflow and engineering principles |
-| `.cursor/commands/plan.md` | `/plan` — step-by-step implementation plan |
-| `.cursor/commands/review.md` | `/review` — senior engineer code review |
-| `.cursor/commands/tests.md` | `/tests` — generate test cases |
-| `.cursor/commands/verify.md` | `/verify` — verify before finishing |
-| `.cursor/rules/typescript.md` | Always-on strict TypeScript rules |
-
-#### `--tool claude`
-| Destination | Purpose |
-|-------------|---------|
-| `AGENTS.md` | Universal workflow and engineering principles |
-| `.claude/commands/plan.md` | `/plan` — step-by-step implementation plan |
-| `.claude/commands/review.md` | `/review` — senior engineer code review |
-| `.claude/commands/tests.md` | `/tests` — generate test cases |
-| `.claude/commands/verify.md` | `/verify` — verify before finishing |
-| `.claude/rules/typescript.md` | Always-on strict TypeScript rules |
-
-#### `--tool codex`
-| Destination | Purpose |
-|-------------|---------|
-| `AGENTS.md` | Universal workflow (primary instruction file for Codex) |
-| `.codex/INSTRUCTIONS.md` | Reference: how Codex reads files, override pattern |
-
-#### `--tool gemini`
-| Destination | Purpose |
-|-------------|---------|
-| `AGENTS.md` | Universal workflow and engineering principles |
-| `.gemini/INSTRUCTIONS.md` | Reference: how Gemini reads files, override pattern |
-
----
-
-## Installation
-
-### Install everything (default)
+Install the core in any repo:
 
 ```sh
 npx devflow init
 ```
 
-Installs all four tool targets into the current directory.
-
-### Install a specific tool
+Install the core plus one adapter:
 
 ```sh
-npx devflow init --tool cursor
-npx devflow init --tool claude
-npx devflow init --tool codex
-npx devflow init --tool gemini
+npx devflow init --adapter cursor
 ```
 
-### Install multiple tools
+Preview changes first:
 
 ```sh
-npx devflow init --tool cursor,claude
+npx devflow init --adapter claude --dry-run
 ```
 
-### Add a tool to an existing install
-
-Use `--merge` to skip files that already exist and only add the new ones:
+Add another adapter later without overwriting existing files:
 
 ```sh
-# Already have cursor, now adding claude
-npx devflow init --tool claude --merge
+npx devflow init --adapter codex --merge
 ```
 
-### Install into another directory
+Refresh Devflow-managed files:
 
 ```sh
-npx devflow init --target ../my-other-project
-npx devflow init --tool cursor --target ~/projects/api
+npx devflow init --adapter all --force
 ```
 
----
+## Workflow
 
-## Flags
+The workflow is intentionally simple:
+
+1. `PLAN` - understand the task, affected files, tests, and risks
+2. `BUILD` - change the minimum necessary code
+3. `TEST` - cover the happy path, edge cases, and failures
+4. `REVIEW` - look for bugs, security issues, duplication, and unnecessary complexity
+5. `VERIFY` - confirm the implementation matches the plan and is ready to ship
+
+This is the standard Devflow tries to install in every project, independent of model.
+
+## Adapters
+
+| Adapter | Installs | Best for |
+| --- | --- | --- |
+| `cursor` | `.cursor/commands/` and `.cursor/rules/` | Cursor IDE users |
+| `claude` | `.claude/commands/` and `.claude/rules/` | Claude Code users |
+| `codex` | `.codex/INSTRUCTIONS.md` | Codex users relying on `AGENTS.md` |
+| `gemini` | `.gemini/INSTRUCTIONS.md` | Gemini users who map Devflow into `GEMINI.md` |
+| `generic` | `.devflow/SETUP.md` | Any chat UI or unsupported tool |
+
+## CLI flags
 
 | Flag | Short | Description |
-|------|-------|-------------|
-| `--tool <list>` | | Comma-separated tools: `cursor`, `claude`, `codex`, `gemini`, `all`. Default: `all` |
-| `--target <path>` | `-t` | Install into a different directory instead of cwd |
-| `--merge` | `-m` | Skip files that already exist (safe way to add a second tool) |
-| `--force` | `-f` | Overwrite existing Devflow-managed files only (`AGENTS.md`, `.cursor`, `.claude`, `.codex`, `.gemini`) |
-| `--dry-run` | `-n` | Preview what would be written without making changes |
+| --- | --- | --- |
+| `--adapter <list>` | | Comma-separated adapters: `cursor`, `claude`, `codex`, `gemini`, `generic`, `all` |
+| `--tool <list>` | | Deprecated alias for `--adapter` |
+| `--target <path>` | `-t` | Install into another directory |
+| `--merge` | `-m` | Skip files that already exist |
+| `--force` | `-f` | Overwrite Devflow-managed files |
+| `--dry-run` | `-n` | Preview without writing |
 | `--version` | `-v` | Print version |
 | `--help` | `-h` | Show help |
 
-> `--force` takes precedence over `--merge` when both are specified. It will never touch files outside Devflow-managed paths.
+## Design constraints
 
----
+Devflow is intentionally narrow:
 
-## How it works
+- it does not try to orchestrate fleets of agents
+- it does not depend on one model vendor
+- it does not add dangerous automation by default
+- it prefers explicit files over hidden behaviour
 
-```
+That tradeoff is deliberate. The goal is portability, consistency, and maintainability.
+
+## Success criteria
+
+A good Devflow installation should let a user:
+
+- install a reusable workflow in 10 to 30 seconds
+- get the same engineering process across projects and tools
+- reduce prompt sprawl and session drift
+- produce smaller diffs, cleaner PRs, and fewer avoidable bugs
+
+## Repository structure
+
+```txt
+src/cli.js
 templates/
-  common/AGENTS.md          ← always installed to target root
-  cursor/.cursor/           ← copied verbatim to target/.cursor/
-  claude/.claude/           ← copied verbatim to target/.claude/
-  codex/                    ← copied to target/.codex/
-  gemini/                   ← copied to target/.gemini/
+  core/
+  prompts/
+  adapters/
+docs/
+examples/
+scripts/
 ```
 
-`devflow init` resolves the selected tools, builds a flat list of `{ src → dest }` pairs, and copies each file to the target directory. After copying, it validates that key files are present and exits with a non-zero code if any are missing.
+## Verification
 
-No network requests. No build step. Pure file copy.
+Run the repository checks locally:
 
----
-
-## Example output
-
-```
-$ npx devflow init --tool cursor
-
-Devflow: installing into /home/you/projects/my-app
-
-  ✓  AGENTS.md
-  ✓  .cursor/commands/plan.md
-  ✓  .cursor/commands/review.md
-  ✓  .cursor/commands/tests.md
-  ✓  .cursor/commands/verify.md
-  ✓  .cursor/rules/typescript.md
-
-Done. Devflow installed successfully.
+```sh
+npm test
 ```
 
-```
-$ npx devflow init --tool claude --merge
+This validates required templates and runs an end-to-end smoke test of the CLI installer.
 
-Devflow: installing into /home/you/projects/my-app (merge)
-
-  –  AGENTS.md (skipped)
-  ✓  .claude/commands/plan.md
-  ✓  .claude/commands/review.md
-  ✓  .claude/commands/tests.md
-  ✓  .claude/commands/verify.md
-  ✓  .claude/rules/typescript.md
-
-Done. Devflow installed successfully.
-```
-
-```
-$ npx devflow init --dry-run
-
-Devflow: dry run — target: /home/you/projects/my-app
-
-  [create]    AGENTS.md
-  [conflict]  .cursor/commands/plan.md
-  ...
-
-  Tip: use --force to overwrite or --merge to skip conflicts.
-
-Dry run complete. Run without --dry-run to apply.
-```
-
----
-
-## Roadmap
-
-- [ ] `devflow update` — pull latest template versions into an existing install
-- [ ] `devflow eject` — remove all Devflow-managed files from a project
-- [ ] Per-project config (`.devflowrc`) to persist tool and target preferences
-- [ ] Project-type presets (e.g. `--preset next`, `--preset node-api`)
-- [ ] Node 22 CI matrix
-- [ ] npm publish workflow
-
----
-
-## Releases
-
-See [CHANGELOG.md](CHANGELOG.md) for the full release history.
-
-Latest release: **v0.1.0** — initial multi-tool release (Cursor, Claude Code, Codex, Gemini).
-
----
-
-## Tool-specific guides
+## Tool guides
 
 - [Cursor](docs/cursor.md)
 - [Claude Code](docs/claude-code.md)
-- [Codex CLI](docs/codex.md)
-- [Gemini CLI](docs/gemini.md)
-
----
-
-## Requirements
-
-- Node.js 18+
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Security
-
-See [SECURITY.md](SECURITY.md).
+- [Codex](docs/codex.md)
+- [Gemini](docs/gemini.md)
+- [Generic](docs/generic.md)
 
 ## License
 

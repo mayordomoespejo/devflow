@@ -1,7 +1,7 @@
 {
   "name": "devflow",
   "version": "0.1.0",
-  "description": "AI-assisted development toolkit for Cursor, Claude Code, Codex, and Gemini",
+  "description": "Portable AI development workflow kit with a universal core and optional adapters",
   "main": "src/cli.js",
   "bin": {
     "devflow": "src/cli.js"
@@ -22,10 +22,13 @@
     "claude",
     "codex",
     "gemini",
+    "claude-code",
     "ai",
     "workflow",
     "cli",
-    "agents"
+    "agents",
+    "prompts",
+    "developer-tools"
   ],
   "author": "mayordomoespejo",
   "license": "MIT",

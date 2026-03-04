@@ -42,6 +42,14 @@ const ADAPTER_CONFIG = {
 };
 
 const ALL_TOOLS = Object.keys(ADAPTER_CONFIG);
+const CORE_KEY_FILES = [
+  'AGENTS.md',
+  'DEVFLOW.md',
+  path.join('devflow', 'prompts', 'plan.md'),
+  path.join('devflow', 'prompts', 'review.md'),
+  path.join('devflow', 'prompts', 'tests.md'),
+  path.join('devflow', 'prompts', 'verify.md'),
+];
 
 // Paths Devflow is allowed to create or overwrite.
 // --force will never touch files outside these prefixes.
@@ -97,15 +105,22 @@ function buildInstallList(tools) {
 }
 
 function parseTools(raw) {
-  if (!raw || raw === 'all') return ALL_TOOLS;
-  const tools = raw.split(',').map((t) => t.trim().toLowerCase());
-  const invalid = tools.filter((t) => !Object.prototype.hasOwnProperty.call(ADAPTER_CONFIG, t));
+  if (!raw) return [];
+  if (raw === 'all') return ALL_TOOLS;
+
+  const tools = raw
+    .split(',')
+    .map((tool) => tool.trim().toLowerCase())
+    .filter(Boolean);
+
+  const invalid = tools.filter((tool) => !Object.prototype.hasOwnProperty.call(ADAPTER_CONFIG, tool));
   if (invalid.length > 0) {
-    console.error(`Error: unknown tool(s): ${invalid.join(', ')}`);
+    console.error(`Error: unknown adapter(s): ${invalid.join(', ')}`);
     console.error(`Valid values: ${ALL_TOOLS.join(', ')}, all`);
     process.exit(1);
   }
-  return tools;
+
+  return [...new Set(tools)];
 }
 
 function resolveTarget(raw) {
@@ -131,15 +146,16 @@ function copyItem({ src, dest }, targetDir) {
   fs.copyFileSync(src, destPath);
 }
 
-// Checks AGENTS.md + DEVFLOW.md (always) + one key file per selected adapter.
+// Checks core files (always) + one key file per selected adapter.
 function validate(tools, targetDir) {
   const failures = [];
-  if (!exists('AGENTS.md', targetDir)) {
-    failures.push('AGENTS.md (from core)');
+
+  for (const file of CORE_KEY_FILES) {
+    if (!exists(file, targetDir)) {
+      failures.push(`${file} (from core)`);
+    }
   }
-  if (!exists('DEVFLOW.md', targetDir)) {
-    failures.push('DEVFLOW.md (from core)');
-  }
+
   for (const tool of tools) {
     const { keyFile } = ADAPTER_CONFIG[tool];
     if (keyFile && !exists(keyFile, targetDir)) {
@@ -156,7 +172,8 @@ function runInit(options) {
   const dryRun   = Boolean(options.dryRun);
   const force    = Boolean(options.force);
   const merge    = Boolean(options.merge) && !force; // force wins over merge
-  const tools    = parseTools(options.tool);
+  const adapterArg = options.adapter ?? options.tool;
+  const tools      = parseTools(adapterArg);
 
   let items;
   try {
@@ -183,7 +200,9 @@ function runInit(options) {
 
   if (dryRun) {
     const modeLabel = force ? ' --force' : merge ? ' --merge' : '';
-    console.log(`Devflow: dry run — target: ${targetDir}${modeLabel}\n`);
+    const installLabel = tools.length > 0 ? `core + ${tools.join(', ')}` : 'core only';
+    console.log(`Devflow: dry run — target: ${targetDir}${modeLabel}`);
+    console.log(`Install set: ${installLabel}\n`);
     for (const { dest } of items) {
       const fileExists = exists(dest, targetDir);
       let tag;
@@ -202,7 +221,9 @@ function runInit(options) {
   }
 
   const modeLabel = force ? ' (force)' : merge ? ' (merge)' : '';
-  console.log(`Devflow: installing into ${targetDir}${modeLabel}\n`);
+  const installLabel = tools.length > 0 ? `core + ${tools.join(', ')}` : 'core only';
+  console.log(`Devflow: installing into ${targetDir}${modeLabel}`);
+  console.log(`Install set: ${installLabel}\n`);
 
   for (const item of items) {
     const existed = exists(item.dest, targetDir);
@@ -250,9 +271,12 @@ program
   .option('-n, --dry-run', 'preview operations without writing')
   .option('-t, --target <path>', 'install into a different directory', process.cwd())
   .option(
-    '--tool <tools>',
+    '--adapter <adapters>',
     `comma-separated adapters: ${ALL_TOOLS.join(', ')}, all`,
-    'all',
+  )
+  .option(
+    '--tool <tools>',
+    'deprecated alias for --adapter',
   )
   .action(runInit);
 

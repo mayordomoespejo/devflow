@@ -10,8 +10,10 @@ AGENTS.md
 
 ## Setup checklist
 
-- [ ] `npx devflow init --tool codex` in the project root
+- [ ] `npx devflow init --adapter codex` in the project root
 - [ ] `AGENTS.md` exists at the project root
+- [ ] `DEVFLOW.md` exists at the project root
+- [ ] `devflow/prompts/` exists at the project root
 - [ ] `.codex/INSTRUCTIONS.md` exists
 - [ ] Run Codex from the project root — `AGENTS.md` is loaded automatically at session start
 - [ ] Commit: `git add AGENTS.md .codex && git commit -m "chore: add Devflow Codex workflow"`
@@ -21,14 +23,14 @@ AGENTS.md
 ## Install
 
 ```sh
-npx devflow init --tool codex
+npx devflow init --adapter codex
 ```
 
 Preview first, then apply:
 
 ```sh
-npx devflow init --tool codex --dry-run
-npx devflow init --tool codex --force   # overwrite existing
+npx devflow init --adapter codex --dry-run
+npx devflow init --adapter codex --force   # overwrite existing
 ```
 
 ---
@@ -104,5 +106,5 @@ my-app/
 - Do not edit `AGENTS.md` directly unless you intend to manage updates manually.
 
 **Conflict on re-install**
-- `npx devflow init --tool codex --dry-run` — preview what changes
-- `npx devflow init --tool codex --force` — overwrite Devflow-managed files
+- `npx devflow init --adapter codex --dry-run` — preview what changes
+- `npx devflow init --adapter codex --force` — overwrite Devflow-managed files

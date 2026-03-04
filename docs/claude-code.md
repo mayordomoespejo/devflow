@@ -16,8 +16,10 @@ AGENTS.md
 
 ## Setup checklist
 
-- [ ] `npx devflow init --tool claude` in the project root
+- [ ] `npx devflow init --adapter claude` in the project root
 - [ ] `AGENTS.md` exists at the project root
+- [ ] `DEVFLOW.md` exists at the project root
+- [ ] `devflow/prompts/` exists at the project root
 - [ ] `.claude/commands/` contains `plan.md`, `review.md`, `tests.md`, `verify.md`
 - [ ] `.claude/rules/typescript.md` exists
 - [ ] Open project with `claude` (Claude Code CLI) — commands are available immediately
@@ -28,14 +30,14 @@ AGENTS.md
 ## Install
 
 ```sh
-npx devflow init --tool claude
+npx devflow init --adapter claude
 ```
 
 Preview first, then apply:
 
 ```sh
-npx devflow init --tool claude --dry-run
-npx devflow init --tool claude --force   # overwrite existing
+npx devflow init --adapter claude --dry-run
+npx devflow init --adapter claude --force   # overwrite existing
 ```
 
 ---
@@ -121,6 +123,6 @@ Claude Code reads `CLAUDE.md` alongside `AGENTS.md`. Devflow does not install or
 - Claude Code reads it from the working directory up to the git root.
 
 **Conflict on re-install**
-- `npx devflow init --tool claude --dry-run` — preview what changes
-- `npx devflow init --tool claude --force` — overwrite Devflow-managed files
-- `npx devflow init --tool claude --merge` — skip existing, add only new files
+- `npx devflow init --adapter claude --dry-run` — preview what changes
+- `npx devflow init --adapter claude --force` — overwrite Devflow-managed files
+- `npx devflow init --adapter claude --merge` — skip existing, add only new files

@@ -10,8 +10,10 @@ AGENTS.md
 
 ## Setup checklist
 
-- [ ] `npx devflow init --tool gemini` in the project root
+- [ ] `npx devflow init --adapter gemini` in the project root
 - [ ] `AGENTS.md` exists at the project root
+- [ ] `DEVFLOW.md` exists at the project root
+- [ ] `devflow/prompts/` exists at the project root
 - [ ] `.gemini/INSTRUCTIONS.md` exists
 - [ ] **Optional but recommended:** create `GEMINI.md` at the project root so Gemini auto-loads the workflow (see below)
 - [ ] Commit: `git add AGENTS.md .gemini && git commit -m "chore: add Devflow Gemini workflow"`
@@ -21,14 +23,14 @@ AGENTS.md
 ## Install
 
 ```sh
-npx devflow init --tool gemini
+npx devflow init --adapter gemini
 ```
 
 Preview first, then apply:
 
 ```sh
-npx devflow init --tool gemini --dry-run
-npx devflow init --tool gemini --force   # overwrite existing
+npx devflow init --adapter gemini --dry-run
+npx devflow init --adapter gemini --force   # overwrite existing
 ```
 
 ---
@@ -52,7 +54,7 @@ All files are sent to the model with every prompt.
 To make Gemini load the Devflow workflow automatically, create `GEMINI.md` at your project root after installing:
 
 ```sh
-npx devflow init --tool gemini
+npx devflow init --adapter gemini
 
 # Then create GEMINI.md that imports AGENTS.md
 cat > GEMINI.md << 'EOF'
@@ -147,6 +149,6 @@ Gemini does not read it automatically. It is there for developers setting up or 
 - Confirm Gemini is running with the project root in scope, not from a parent directory.
 
 **Conflict on re-install**
-- `npx devflow init --tool gemini --dry-run` — preview what changes
-- `npx devflow init --tool gemini --force` — overwrite Devflow-managed files
-- `npx devflow init --tool gemini --merge` — skip existing, add only new files
+- `npx devflow init --adapter gemini --dry-run` — preview what changes
+- `npx devflow init --adapter gemini --force` — overwrite Devflow-managed files
+- `npx devflow init --adapter gemini --merge` — skip existing, add only new files

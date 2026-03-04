@@ -16,7 +16,9 @@ AGENTS.md
 
 ## Setup checklist
 
-- [ ] `npx devflow init --tool cursor` in the project root
+- [ ] `npx devflow init --adapter cursor` in the project root
+- [ ] `DEVFLOW.md` exists at the project root
+- [ ] `devflow/prompts/` exists at the project root
 - [ ] `AGENTS.md` exists at the project root
 - [ ] `.cursor/commands/` contains `plan.md`, `review.md`, `tests.md`, `verify.md`
 - [ ] `.cursor/rules/typescript.md` exists
@@ -28,14 +30,14 @@ AGENTS.md
 ## Install
 
 ```sh
-npx devflow init --tool cursor
+npx devflow init --adapter cursor
 ```
 
 Preview first, then apply:
 
 ```sh
-npx devflow init --tool cursor --dry-run
-npx devflow init --tool cursor --force   # overwrite existing
+npx devflow init --adapter cursor --dry-run
+npx devflow init --adapter cursor --force   # overwrite existing
 ```
 
 ---
@@ -94,6 +96,6 @@ Commands live in `.cursor/commands/`. Cursor auto-discovers any `.md` file place
 - `.md` rules are Always-on globally. For Auto Attach by glob or Agent Requested mode, rename to `.mdc` with the appropriate front matter.
 
 **Conflict on re-install**
-- `npx devflow init --tool cursor --dry-run` — preview what changes
-- `npx devflow init --tool cursor --force` — overwrite Devflow-managed files
-- `npx devflow init --tool cursor --merge` — skip existing, add only new files
+- `npx devflow init --adapter cursor --dry-run` — preview what changes
+- `npx devflow init --adapter cursor --force` — overwrite Devflow-managed files
+- `npx devflow init --adapter cursor --merge` — skip existing, add only new files

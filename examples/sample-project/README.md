@@ -5,7 +5,7 @@ A concrete end-to-end demo: create a minimal repo, install Devflow for one or mo
 Pick the tool you use and follow that section. All sections share the same shape:
 
 1. Create a dummy repo
-2. Run `npx devflow init --tool <tool>`
+2. Run `npx devflow init --adapter <tool>`
 3. Verify the installed files
 4. Try the workflow
 
@@ -25,7 +25,7 @@ echo "# Demo" > README.md
 ### 2. Install
 
 ```sh
-npx devflow init --tool cursor
+npx devflow init --adapter cursor
 ```
 
 Output:
@@ -34,6 +34,11 @@ Output:
 Devflow: installing into /home/you/projects/demo-cursor
 
   ✓  AGENTS.md
+  ✓  DEVFLOW.md
+  ✓  devflow/prompts/plan.md
+  ✓  devflow/prompts/review.md
+  ✓  devflow/prompts/tests.md
+  ✓  devflow/prompts/verify.md
   ✓  .cursor/commands/plan.md
   ✓  .cursor/commands/review.md
   ✓  .cursor/commands/tests.md
@@ -47,6 +52,8 @@ Done. Devflow installed successfully.
 
 ```sh
 ls AGENTS.md
+ls DEVFLOW.md
+ls devflow/prompts/
 ls .cursor/commands/
 ls .cursor/rules/
 ```
@@ -55,6 +62,8 @@ Expected:
 
 ```
 AGENTS.md
+DEVFLOW.md
+devflow/prompts/  plan.md  review.md  tests.md  verify.md
 .cursor/commands/  plan.md  review.md  tests.md  verify.md
 .cursor/rules/     typescript.md
 ```
@@ -86,7 +95,7 @@ echo "# Demo" > README.md
 ### 2. Install
 
 ```sh
-npx devflow init --tool claude
+npx devflow init --adapter claude
 ```
 
 Output:
@@ -95,6 +104,11 @@ Output:
 Devflow: installing into /home/you/projects/demo-claude
 
   ✓  AGENTS.md
+  ✓  DEVFLOW.md
+  ✓  devflow/prompts/plan.md
+  ✓  devflow/prompts/review.md
+  ✓  devflow/prompts/tests.md
+  ✓  devflow/prompts/verify.md
   ✓  .claude/commands/plan.md
   ✓  .claude/commands/review.md
   ✓  .claude/commands/tests.md
@@ -108,6 +122,8 @@ Done. Devflow installed successfully.
 
 ```sh
 ls AGENTS.md
+ls DEVFLOW.md
+ls devflow/prompts/
 ls .claude/commands/
 ls .claude/rules/
 ```
@@ -116,6 +132,8 @@ Expected:
 
 ```
 AGENTS.md
+DEVFLOW.md
+devflow/prompts/  plan.md  review.md  tests.md  verify.md
 .claude/commands/  plan.md  review.md  tests.md  verify.md
 .claude/rules/     typescript.md
 ```
@@ -147,7 +165,7 @@ echo "# Demo" > README.md
 ### 2. Install
 
 ```sh
-npx devflow init --tool codex
+npx devflow init --adapter codex
 ```
 
 Output:
@@ -156,6 +174,11 @@ Output:
 Devflow: installing into /home/you/projects/demo-codex
 
   ✓  AGENTS.md
+  ✓  DEVFLOW.md
+  ✓  devflow/prompts/plan.md
+  ✓  devflow/prompts/review.md
+  ✓  devflow/prompts/tests.md
+  ✓  devflow/prompts/verify.md
   ✓  .codex/INSTRUCTIONS.md
 
 Done. Devflow installed successfully.
@@ -164,7 +187,8 @@ Done. Devflow installed successfully.
 ### 3. Verify
 
 ```sh
-ls AGENTS.md .codex/INSTRUCTIONS.md
+ls AGENTS.md DEVFLOW.md .codex/INSTRUCTIONS.md
+ls devflow/prompts/
 ```
 
 ### 4. Use the workflow
@@ -205,7 +229,7 @@ echo "# Demo" > README.md
 ### 2. Install
 
 ```sh
-npx devflow init --tool gemini
+npx devflow init --adapter gemini
 ```
 
 Output:
@@ -214,6 +238,11 @@ Output:
 Devflow: installing into /home/you/projects/demo-gemini
 
   ✓  AGENTS.md
+  ✓  DEVFLOW.md
+  ✓  devflow/prompts/plan.md
+  ✓  devflow/prompts/review.md
+  ✓  devflow/prompts/tests.md
+  ✓  devflow/prompts/verify.md
   ✓  .gemini/INSTRUCTIONS.md
 
 Done. Devflow installed successfully.
@@ -222,12 +251,13 @@ Done. Devflow installed successfully.
 ### 3. Verify
 
 ```sh
-ls AGENTS.md .gemini/INSTRUCTIONS.md
+ls AGENTS.md DEVFLOW.md .gemini/INSTRUCTIONS.md
+ls devflow/prompts/
 ```
 
 ### 4. Use the workflow
 
-Gemini reads `AGENTS.md` at session start. All instructions are active automatically.
+Gemini reads `GEMINI.md`, not `AGENTS.md`, at session start. Use `.gemini/INSTRUCTIONS.md` to create a project `GEMINI.md` that imports the Devflow core.
 
 The `.gemini/INSTRUCTIONS.md` file explains:
 - how Gemini loads instruction files
@@ -255,13 +285,15 @@ EOF
 mkdir ~/projects/demo-all
 cd ~/projects/demo-all
 git init
-npx devflow init
+npx devflow init --adapter all
 ```
 
 ### Verify
 
 ```sh
 ls AGENTS.md
+ls DEVFLOW.md
+ls devflow/prompts/
 ls .cursor/commands/ .cursor/rules/
 ls .claude/commands/ .claude/rules/
 ls .codex/
@@ -271,7 +303,7 @@ ls .gemini/
 ### Commit the installed files
 
 ```sh
-git add AGENTS.md .cursor .claude .codex .gemini
+git add AGENTS.md DEVFLOW.md devflow/ .cursor .claude .codex .gemini
 git commit -m "chore: add Devflow AI workflow files"
 ```
 
@@ -284,7 +316,7 @@ Every team member who clones the repo gets the same workflow files — no per-de
 When Devflow releases new template versions, refresh with `--force`:
 
 ```sh
-npx devflow init --force
+npx devflow init --adapter all --force
 ```
 
 This overwrites all Devflow-managed files (`AGENTS.md`, `.cursor`, `.claude`, `.codex`, `.gemini`) and leaves everything else untouched.
