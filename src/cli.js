@@ -6,7 +6,16 @@ const fs = require('fs');
 const path = require('path');
 
 const pkg = require('../package.json');
-const TEMPLATES_DIR = path.join(__dirname, '..', 'templates');
+const TEMPLATES_ROOT = path.join(__dirname, '..', 'templates');
+
+// Tool name → subdirectory inside templates/. null = no tool-specific files.
+const TOOL_DIRS = {
+  cursor: 'cursor',
+  claude: 'claude',
+  codex: null,   // codex uses common/AGENTS.md only
+};
+
+const ALL_TOOLS = Object.keys(TOOL_DIRS);
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -24,6 +33,37 @@ function collectTemplateFiles(dir, base = '') {
   return files;
 }
 
+// Build install list from common/ + each tool's subdir.
+// Returns [{ srcDir, rel }] where rel is the destination path inside the target.
+function buildInstallList(tools) {
+  const srcDirs = [path.join(TEMPLATES_ROOT, 'common')];
+  for (const tool of tools) {
+    const sub = TOOL_DIRS[tool];
+    if (sub) srcDirs.push(path.join(TEMPLATES_ROOT, sub));
+  }
+
+  const items = [];
+  for (const srcDir of srcDirs) {
+    if (!fs.existsSync(srcDir)) continue;
+    for (const rel of collectTemplateFiles(srcDir)) {
+      items.push({ srcDir, rel });
+    }
+  }
+  return items;
+}
+
+function parseTools(raw) {
+  if (!raw || raw === 'all') return ALL_TOOLS;
+  const tools = raw.split(',').map((t) => t.trim().toLowerCase());
+  const invalid = tools.filter((t) => !TOOL_DIRS.hasOwnProperty(t));
+  if (invalid.length > 0) {
+    console.error(`Error: unknown tool(s): ${invalid.join(', ')}`);
+    console.error(`Valid tools: ${ALL_TOOLS.join(', ')}, all`);
+    process.exit(1);
+  }
+  return tools;
+}
+
 function resolveTarget(raw) {
   const resolved = path.resolve(raw);
   if (!fs.existsSync(resolved)) {
@@ -37,20 +77,19 @@ function resolveTarget(raw) {
   return resolved;
 }
 
-function findConflicts(files, targetDir) {
-  return files.filter((f) => fs.existsSync(path.join(targetDir, f)));
+function findConflicts(items, targetDir) {
+  return items.filter(({ rel }) => fs.existsSync(path.join(targetDir, rel)));
 }
 
-function copyFile(relPath, srcDir, destDir) {
-  const src = path.join(srcDir, relPath);
-  const dest = path.join(destDir, relPath);
+function copyItem({ srcDir, rel }, destDir) {
+  const src = path.join(srcDir, rel);
+  const dest = path.join(destDir, rel);
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   fs.copyFileSync(src, dest);
 }
 
-function verify(files, targetDir) {
-  const missing = files.filter((f) => !fs.existsSync(path.join(targetDir, f)));
-  return missing;
+function verify(items, targetDir) {
+  return items.filter(({ rel }) => !fs.existsSync(path.join(targetDir, rel)));
 }
 
 // ─── init command ────────────────────────────────────────────────────────────
@@ -59,35 +98,36 @@ function runInit(options) {
   const targetDir = resolveTarget(options.target || process.cwd());
   const dryRun = Boolean(options.dryRun);
   const force = Boolean(options.force);
+  const tools = parseTools(options.tool);
 
-  let files;
+  let items;
   try {
-    files = collectTemplateFiles(TEMPLATES_DIR);
+    items = buildInstallList(tools);
   } catch (err) {
-    console.error(`Error: could not read templates directory.\n${err.message}`);
+    console.error(`Error: could not read templates.\n${err.message}`);
     process.exit(1);
   }
 
-  if (files.length === 0) {
-    console.error('Error: templates directory is empty.');
+  if (items.length === 0) {
+    console.error('Error: no template files found for the selected tools.');
     process.exit(1);
   }
 
-  const conflicts = findConflicts(files, targetDir);
+  const conflicts = findConflicts(items, targetDir);
 
   if (conflicts.length > 0 && !force && !dryRun) {
     console.error('Error: the following files already exist in the target:');
-    conflicts.forEach((f) => console.error(`  ${f}`));
+    conflicts.forEach(({ rel }) => console.error(`  ${rel}`));
     console.error('\nUse --force to overwrite, or --dry-run to preview.');
     process.exit(1);
   }
 
   if (dryRun) {
     console.log(`Devflow: dry run — target: ${targetDir}\n`);
-    for (const f of files) {
-      const exists = fs.existsSync(path.join(targetDir, f));
+    for (const { rel } of items) {
+      const exists = fs.existsSync(path.join(targetDir, rel));
       const tag = exists ? '[overwrite]' : '[create]  ';
-      console.log(`  ${tag}  ${f}`);
+      console.log(`  ${tag}  ${rel}`);
     }
     console.log('\nDry run complete. Run without --dry-run to apply.');
     return;
@@ -96,22 +136,22 @@ function runInit(options) {
   const label = force ? ' (force)' : '';
   console.log(`Devflow: installing into ${targetDir}${label}\n`);
 
-  for (const f of files) {
+  for (const item of items) {
     try {
-      const existed = fs.existsSync(path.join(targetDir, f));
-      copyFile(f, TEMPLATES_DIR, targetDir);
+      const existed = fs.existsSync(path.join(targetDir, item.rel));
+      copyItem(item, targetDir);
       const suffix = existed ? ' (overwritten)' : '';
-      console.log(`  ✓  ${f}${suffix}`);
+      console.log(`  ✓  ${item.rel}${suffix}`);
     } catch (err) {
-      console.error(`  ✗  ${f}  →  ${err.message}`);
+      console.error(`  ✗  ${item.rel}  →  ${err.message}`);
       process.exit(1);
     }
   }
 
-  const missing = verify(files, targetDir);
+  const missing = verify(items, targetDir);
   if (missing.length > 0) {
     console.error('\nValidation failed — these files were not written:');
-    missing.forEach((f) => console.error(`  ${f}`));
+    missing.forEach(({ rel }) => console.error(`  ${rel}`));
     process.exit(1);
   }
 
@@ -122,7 +162,7 @@ function runInit(options) {
 
 program
   .name('devflow')
-  .description('AI-assisted development toolkit for Cursor')
+  .description('AI-assisted development toolkit for Cursor, Claude Code, and Codex')
   .version(pkg.version, '-v, --version');
 
 program
@@ -131,6 +171,7 @@ program
   .option('-f, --force', 'overwrite existing files')
   .option('-n, --dry-run', 'preview operations without writing')
   .option('-t, --target <path>', 'install into a different directory', process.cwd())
+  .option('--tool <tools>', `tools to install: ${ALL_TOOLS.join(', ')}, all (default: all)`, 'all')
   .action(runInit);
 
 program.parse(process.argv);
