@@ -16,7 +16,7 @@ Install Devflow once at the repository root. All packages share the same core wo
 
 ```sh
 # From the repo root
-npx devflow-cli init --adapter cursor
+npx devflow-agent-cli init --adapter cursor
 ```
 
 All packages inherit `AGENTS.md`, `DEVFLOW.md`, `devflow/prompts/`, and the adapter files at the root. This is the simplest setup and works well when every package follows the same engineering standards.
@@ -29,13 +29,13 @@ Install Devflow separately in each package. Useful when packages use different A
 
 ```sh
 # API package uses Claude Code
-npx devflow-cli init --adapter claude --target packages/api
+npx devflow-agent-cli init --adapter claude --target packages/api
 
 # Frontend package uses Cursor
-npx devflow-cli init --adapter cursor --target packages/frontend
+npx devflow-agent-cli init --adapter cursor --target packages/frontend
 
 # Shared library uses no adapter-specific files
-npx devflow-cli init --adapter none --target packages/shared
+npx devflow-agent-cli init --adapter none --target packages/shared
 ```
 
 Each package gets its own `AGENTS.md`, `DEVFLOW.md`, and adapter files. The files are independent — updating one package does not affect others.
@@ -48,7 +48,7 @@ Use a shell loop to install Devflow in every package with the same adapter.
 
 ```sh
 for pkg in packages/*; do
-  npx devflow-cli init --adapter generic --target "$pkg" --merge
+  npx devflow-agent-cli init --adapter generic --target "$pkg" --merge
 done
 ```
 
@@ -62,13 +62,13 @@ Install the core at the root (shared prompts and workflow contract) and install 
 
 ```sh
 # Core at root (adapter none = core only)
-npx devflow-cli init --adapter none
+npx devflow-agent-cli init --adapter none
 
 # Cursor adapter only in the frontend package
-npx devflow-cli init --adapter cursor --target packages/frontend
+npx devflow-agent-cli init --adapter cursor --target packages/frontend
 
 # Claude Code adapter only in the API package
-npx devflow-cli init --adapter claude --target packages/api
+npx devflow-agent-cli init --adapter claude --target packages/api
 ```
 
 ---
@@ -78,8 +78,8 @@ npx devflow-cli init --adapter claude --target packages/api
 Use `devflow doctor` with `--target` to inspect a specific package:
 
 ```sh
-npx devflow-cli doctor --target packages/api
-npx devflow-cli doctor --target packages/frontend --verbose
+npx devflow-agent-cli doctor --target packages/api
+npx devflow-agent-cli doctor --target packages/frontend --verbose
 ```
 
 To check all packages at once:
@@ -87,7 +87,7 @@ To check all packages at once:
 ```sh
 for pkg in packages/*; do
   echo "── $pkg"
-  npx devflow-cli doctor --target "$pkg"
+  npx devflow-agent-cli doctor --target "$pkg"
 done
 ```
 
@@ -129,11 +129,11 @@ To refresh Devflow-managed files across all packages after a new release:
 
 ```sh
 # Root
-npx devflow-cli init --force
+npx devflow-agent-cli init --force
 
 # All packages
 for pkg in packages/*; do
-  npx devflow-cli init --target "$pkg" --force
+  npx devflow-agent-cli init --target "$pkg" --force
 done
 ```
 
