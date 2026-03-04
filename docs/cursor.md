@@ -21,6 +21,7 @@ devflow/prompts/
 .cursor/
   commands/
     plan.md
+    build.md
     tests.md
     review.md
     verify.md
@@ -45,7 +46,7 @@ Recommended flow:
 1. Run `npx devflow init --adapter cursor`
 2. Open the repository in Cursor
 3. Start in chat with `/plan`
-4. Implement the task
+4. Run `/build` to implement the agreed plan
 5. Run `/tests`
 6. Run `/review`
 7. Run `/verify`
@@ -57,6 +58,7 @@ The adapter installs these command files:
 | Command | Purpose |
 | --- | --- |
 | `/plan` | Produce an implementation plan before coding |
+| `/build` | Implement the agreed plan with minimum scope |
 | `/tests` | Generate or improve tests for the current implementation |
 | `/review` | Review the implementation as a senior engineer |
 | `/verify` | Verify the work against the plan before finishing |
@@ -67,6 +69,7 @@ Examples:
 
 ```text
 /plan add audit logging to the billing webhook
+/build implement the accepted plan
 /tests cover invalid token and expired session cases
 /review focus on error handling and duplicated logic
 /verify against the accepted plan
@@ -87,6 +90,7 @@ Examples:
 - [ ] Confirm `DEVFLOW.md` exists
 - [ ] Confirm `devflow/prompts/plan.txt` exists
 - [ ] Confirm `.cursor/commands/plan.md` exists
+- [ ] Confirm `.cursor/commands/build.md` exists
 - [ ] Confirm `.cursor/commands/tests.md` exists
 - [ ] Confirm `.cursor/commands/review.md` exists
 - [ ] Confirm `.cursor/commands/verify.md` exists
@@ -99,7 +103,7 @@ Examples:
 ### Commands do not appear in Cursor
 
 - Confirm `.cursor/commands/` exists in the project root
-- Confirm the files are Markdown files named `plan.md`, `tests.md`, `review.md`, `verify.md`
+- Confirm the files are Markdown files named `plan.md`, `build.md`, `tests.md`, `review.md`, `verify.md`
 - Reopen the project in Cursor if the files were added while it was already open
 
 ### The wrong adapter was installed by default

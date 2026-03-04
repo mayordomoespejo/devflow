@@ -1,9 +1,4 @@
 #!/usr/bin/env node
-/**
- * Smoke test for devflow CLI.
- * Creates isolated temp directories, runs installs per tool, checks expected files.
- * Exit code 0 = all pass, 1 = any failure.
- */
 
 import { execSync }                   from 'node:child_process';
 import { mkdtempSync, mkdirSync,
@@ -13,7 +8,7 @@ import { tmpdir }                     from 'node:os';
 import { fileURLToPath }              from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const CLI       = join(__dirname, '..', 'src', 'cli.js');
+const CLI       = join(__dirname, '..', 'dist', 'cli.js');
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -63,12 +58,13 @@ function section(title) {
 const tmp = mkdtempSync(join(tmpdir(), 'devflow-smoke-'));
 const targets = {};
 
-for (const install of ['default-generic', 'default-cursor', 'none', 'cursor', 'claude', 'codex', 'gemini', 'anthropic', 'generic', 'multi']) {
+for (const install of ['default-generic', 'default-cursor', 'default-claude', 'none', 'cursor', 'claude', 'codex', 'gemini', 'generic', 'multi']) {
   targets[install] = join(tmp, install);
   mkdirSync(targets[install]);
 }
 
 mkdirSync(join(targets['default-cursor'], '.cursor'));
+mkdirSync(join(targets['default-claude'], '.claude'));
 
 console.log(`Devflow smoke test`);
 console.log(`Temp dir: ${tmp}`);
@@ -79,12 +75,12 @@ try {
   section('Installs');
   run('default-generic', `init                           --target "${targets['default-generic']}" --merge`);
   run('default-cursor',  `init                           --target "${targets['default-cursor']}"  --merge`);
+  run('default-claude',  `init                           --target "${targets['default-claude']}"  --merge`);
   run('none',            `init --adapter none            --target "${targets.none}"               --merge`);
   run('cursor',          `init --adapter cursor          --target "${targets.cursor}"             --merge`);
   run('claude',          `init --adapter claude          --target "${targets.claude}"             --merge`);
   run('codex',           `init --adapter codex           --target "${targets.codex}"              --merge`);
   run('gemini',          `init --adapter gemini          --target "${targets.gemini}"             --merge`);
-  run('anthropic',       `init --adapter anthropic       --target "${targets.anthropic}"          --merge`);
   run('generic',         `init --adapter generic         --target "${targets.generic}"            --merge`);
   run('multi',           `init --adapters cursor,generic --target "${targets.multi}"              --merge`);
 
@@ -109,26 +105,32 @@ try {
   section('default cursor target');
   check(join(targets['default-cursor'], '.cursor', 'commands', 'plan.md'), '.cursor/commands/plan.md');
 
+  section('default claude target');
+  check(join(targets['default-claude'], '.claude', 'commands', 'plan.md'), '.claude/commands/plan.md');
+
   section('none target');
   checkMissing(join(targets.none, '.cursor', 'commands', 'plan.md'), '.cursor/commands/plan.md absent');
+  checkMissing(join(targets.none, '.claude', 'commands', 'plan.md'), '.claude/commands/plan.md absent');
   checkMissing(join(targets.none, '.devflow', 'README.md'), '.devflow/README.md absent');
 
   section('cursor target');
   check(join(targets.cursor, '.cursor', 'commands', 'plan.md'),    '.cursor/commands/plan.md');
+  check(join(targets.cursor, '.cursor', 'commands', 'build.md'),   '.cursor/commands/build.md');
   check(join(targets.cursor, '.cursor', 'commands', 'review.md'),  '.cursor/commands/review.md');
   check(join(targets.cursor, '.cursor', 'rules', 'typescript.md'), '.cursor/rules/typescript.md');
 
   section('claude target');
-  check(join(targets.claude, '.devflow', 'adapters', 'claude', 'README.md'), '.devflow/adapters/claude/README.md');
+  check(join(targets.claude, '.claude', 'commands', 'plan.md'),   '.claude/commands/plan.md');
+  check(join(targets.claude, '.claude', 'commands', 'build.md'),  '.claude/commands/build.md');
+  check(join(targets.claude, '.claude', 'commands', 'tests.md'),  '.claude/commands/tests.md');
+  check(join(targets.claude, '.claude', 'commands', 'review.md'), '.claude/commands/review.md');
+  check(join(targets.claude, '.claude', 'commands', 'verify.md'), '.claude/commands/verify.md');
 
   section('codex target');
   check(join(targets.codex, '.devflow', 'adapters', 'codex', 'README.md'), '.devflow/adapters/codex/README.md');
 
   section('gemini target');
   check(join(targets.gemini, '.devflow', 'adapters', 'gemini', 'README.md'), '.devflow/adapters/gemini/README.md');
-
-  section('anthropic target');
-  check(join(targets.anthropic, '.devflow', 'adapters', 'anthropic', 'README.md'), '.devflow/adapters/anthropic/README.md');
 
   section('generic target');
   check(join(targets.generic, '.devflow', 'README.md'), '.devflow/README.md');

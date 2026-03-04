@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `devflow init` CLI with `--target`, `--force`, `--merge`, `--dry-run`, `--adapter`, and `--adapters`
 - Default adapter detection: `cursor` when `.cursor/` exists, otherwise `generic`
 - Cursor adapter with `.cursor/commands/` and `.cursor/rules/typescript.md`
-- Documentation adapters for `generic`, `claude-code`, and `codex`
+- Documentation adapters for `generic`, `claude`, `codex`, and `gemini`
 - Template validation and smoke tests
 - GitHub Actions CI for Node 18 and 20
 - Universal README, usage guides, and examples

@@ -13,7 +13,7 @@ import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const CLI = join(__dirname, '..', 'src', 'cli.js');
+const CLI = join(__dirname, '..', 'dist', 'cli.js');
 
 let passed = 0;
 let failed = 0;

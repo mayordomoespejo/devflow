@@ -2,10 +2,12 @@
 
 ## What gets installed
 
-```
+```txt
 AGENTS.md
-.gemini/
-  INSTRUCTIONS.md   ← reference doc, not auto-read by Gemini
+DEVFLOW.md
+.devflow/workflows.yml
+devflow/prompts/
+.devflow/adapters/gemini/README.md
 ```
 
 ## Setup checklist
@@ -14,9 +16,8 @@ AGENTS.md
 - [ ] `AGENTS.md` exists at the project root
 - [ ] `DEVFLOW.md` exists at the project root
 - [ ] `devflow/prompts/` exists at the project root
-- [ ] `.gemini/INSTRUCTIONS.md` exists
 - [ ] **Optional but recommended:** create `GEMINI.md` at the project root so Gemini auto-loads the workflow (see below)
-- [ ] Commit: `git add AGENTS.md .gemini && git commit -m "chore: add Devflow Gemini workflow"`
+- [ ] Commit: `git add AGENTS.md DEVFLOW.md devflow/ .devflow/ && git commit -m "chore: add Devflow Gemini workflow"`
 
 ---
 
@@ -45,7 +46,7 @@ Gemini CLI reads `GEMINI.md` files hierarchically and merges them all:
 
 All files are sent to the model with every prompt.
 
-**Important:** Devflow installs `AGENTS.md` (the universal workflow) and `.gemini/INSTRUCTIONS.md` (a reference doc). Gemini does not read either file automatically — it reads `GEMINI.md` files, which Devflow does not install by default. See [Activating the workflow](#activating-the-workflow-with-gemini) below.
+**Important:** Devflow installs `AGENTS.md` (the universal workflow). Gemini does not read it automatically — it reads `GEMINI.md` files, which Devflow does not install by default. See [Activating the workflow](#activating-the-workflow-with-gemini) below.
 
 ---
 
@@ -121,17 +122,6 @@ Create `AGENTS.override.md` at the project root and reference it from `GEMINI.md
 ```
 
 `AGENTS.override.md` contains your project-specific rules. `AGENTS.md` stays untouched and can be updated with `--force`.
-
----
-
-## .gemini/INSTRUCTIONS.md
-
-This file is a reference document. It explains:
-- How Gemini loads instruction files
-- What Gemini supports vs what it does not
-- The override pattern for project-specific rules
-
-Gemini does not read it automatically. It is there for developers setting up or extending the Devflow integration.
 
 ---
 
