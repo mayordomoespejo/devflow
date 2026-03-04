@@ -1,166 +1,210 @@
-# Devflow — Examples
+# Devflow Examples
 
-Step-by-step demos for each supported tool. Each route creates a temporary project, runs `devflow init`, and verifies the installed files.
+This folder shows how to use Devflow in a universal way, without tying the workflow to a single model or tool.
 
-No frameworks or extra dependencies required — only Node.js 18+ and your AI tool of choice.
+There are two practical routes:
 
----
+1. `generic`: copy prompts into any chat, IDE, or harness
+2. `cursor`: use the Cursor adapter, but keep the same prompts available as plain copy/paste inputs
 
-## Routes
+The workflow is always the same:
 
-| Route | Tool | What gets installed |
-|-------|------|---------------------|
-| [Cursor](#cursor) | Cursor IDE | core files + `.cursor/commands/` + `.cursor/rules/` |
-| [Claude Code](#claude-code) | Claude Code CLI | core files + `.claude/commands/` + `.claude/rules/` |
-| [Codex](#codex-cli) | OpenAI Codex CLI | core files + `.codex/INSTRUCTIONS.md` |
-| [Gemini](#gemini-cli) | Google Gemini CLI | core files + `.gemini/INSTRUCTIONS.md` |
+```text
+PLAN -> BUILD -> TEST -> REVIEW -> VERIFY
+```
 
-See [sample-project/README.md](sample-project/README.md) for the full walkthrough (create repo → install → verify → use).
+## Route 1: Generic
 
----
+Use this when you work in a plain chat UI, terminal agent, editor plugin, or any setup without native Devflow commands.
 
-## Cursor
+Install:
 
 ```sh
-mkdir /tmp/demo-cursor && cd /tmp/demo-cursor
-git init
+npx devflow init --adapter generic
+```
+
+What you use:
+
+- `AGENTS.md`
+- `DEVFLOW.md`
+- `devflow/prompts/plan.txt`
+- `devflow/prompts/build.txt`
+- `devflow/prompts/tests.txt`
+- `devflow/prompts/review.txt`
+- `devflow/prompts/verify.txt`
+
+### Example: PLAN prompt
+
+Copy and paste:
+
+```text
+Create a step-by-step implementation plan for the following task:
+
+Add audit logging to the billing webhook.
+
+The plan must include:
+
+1. What needs to be built or changed
+2. Which files will be affected
+3. Functions, components, or types to create or modify
+4. Tests that should pass when done
+5. Edge cases and risks to address
+
+Do not write any code yet. Only the plan.
+```
+
+### Example: BUILD prompt
+
+Copy and paste after accepting the plan:
+
+```text
+Implement the agreed plan for the following task:
+
+Add audit logging to the billing webhook.
+
+Requirements:
+
+1. Make the smallest working change that satisfies the plan
+2. Modify existing code before adding new abstractions
+3. Keep functions small and explicit
+4. Preserve existing behavior outside the requested change
+5. Note any follow-up risks or tradeoffs if they remain
+
+Return the implementation and briefly explain what changed.
+```
+
+### Example: TEST prompt
+
+Copy and paste after implementation:
+
+```text
+Generate tests for the following implementation:
+
+Add audit logging to the billing webhook.
+
+Cover:
+
+- The happy path
+- Edge cases identified during planning
+- Error states and invalid input
+- Any boundary conditions
+
+Prefer:
+
+- Integration tests over unit tests where they provide more confidence
+- Realistic test data over artificial fixtures
+- Minimal mocking where feasible
+
+Provide the test code ready to run.
+```
+
+### Example: REVIEW prompt
+
+Copy and paste when reviewing:
+
+```text
+Review the following implementation as a senior engineer.
+
+The change adds audit logging to the billing webhook.
+
+Check for:
+
+- Bugs and logic errors
+- Unhandled edge cases
+- Security issues
+- Duplicated logic
+- Unnecessary complexity
+- Performance issues that matter in production
+
+Be specific. For each issue found, describe the problem and suggest a fix.
+```
+
+### Example: VERIFY prompt
+
+Copy and paste before finishing:
+
+```text
+Verify this implementation against the original plan.
+
+The task was to add audit logging to the billing webhook.
+
+Check each of the following and report the result:
+
+1. Does the code compile or run without errors?
+2. Do tests pass?
+3. Are edge cases from the plan handled?
+4. Is duplicated logic introduced?
+5. Could the solution be simpler without losing correctness?
+6. Is any sensitive data exposed?
+
+For each issue found, describe it clearly and suggest how to resolve it.
+If everything looks good, confirm it is ready to ship.
+```
+
+## Route 2: Cursor
+
+Use this when you want the same Devflow workflow exposed inside Cursor.
+
+Install:
+
+```sh
 npx devflow init --adapter cursor
 ```
 
-Expected files:
+What you get:
 
-```
-AGENTS.md
-.cursor/
-  commands/
-    plan.md
-    review.md
-    tests.md
-    verify.md
-  rules/
-    typescript.md
-```
+- all core files
+- `.cursor/commands/plan.md`
+- `.cursor/commands/tests.md`
+- `.cursor/commands/review.md`
+- `.cursor/commands/verify.md`
+- `.cursor/rules/typescript.md`
 
-**Verify:**
+### Cursor path A: use native commands
 
-```sh
-ls AGENTS.md .cursor/commands/plan.md .cursor/rules/typescript.md
-```
+In Cursor chat:
 
-**Use:** Open the project in Cursor. Type `/plan` or `/review` in the chat panel — the commands are available immediately.
-
----
-
-## Claude Code
-
-```sh
-mkdir /tmp/demo-claude && cd /tmp/demo-claude
-git init
-npx devflow init --adapter claude
+```text
+/plan add audit logging to the billing webhook
+/tests cover invalid payloads and retry handling
+/review focus on duplicate logic and security
+/verify against the accepted plan
 ```
 
-Expected files:
+### Cursor path B: use plain copy/paste prompts
 
-```
-AGENTS.md
-.claude/
-  commands/
-    plan.md
-    review.md
-    tests.md
-    verify.md
-  rules/
-    typescript.md
-```
+You can still use the exact same generic prompts inside Cursor chat.
 
-**Verify:**
+Example:
 
-```sh
-ls AGENTS.md .claude/commands/plan.md .claude/rules/typescript.md
-```
+```text
+Create a step-by-step implementation plan for the following task:
 
-**Use:** Open the project with `claude` (Claude Code CLI). Type `/plan` or `/review` — the commands are picked up from `.claude/commands/`.
+Add audit logging to the billing webhook.
 
----
+The plan must include:
 
-## Codex CLI
+1. What needs to be built or changed
+2. Which files will be affected
+3. Functions, components, or types to create or modify
+4. Tests that should pass when done
+5. Edge cases and risks to address
 
-```sh
-mkdir /tmp/demo-codex && cd /tmp/demo-codex
-git init
-npx devflow init --adapter codex
+Do not write any code yet. Only the plan.
 ```
 
-Expected files:
+This matters because the prompts are the portable source of truth. Slash commands are just a convenience layer.
 
-```
-AGENTS.md
-.codex/
-  INSTRUCTIONS.md
-```
+## Recommended Demo Flow
 
-**Verify:**
+If you want to evaluate Devflow quickly:
 
-```sh
-ls AGENTS.md .codex/INSTRUCTIONS.md
-```
+1. Pick a small real task in a sample repo
+2. Run `npx devflow init --adapter generic` or `npx devflow init --adapter cursor`
+3. Do one full cycle: `PLAN -> BUILD -> TEST -> REVIEW -> VERIFY`
+4. Compare the result to your usual AI workflow: smaller diff, clearer plan, better tests, fewer missed edge cases
 
-**Use:** Codex reads `AGENTS.md` at session start — no extra steps needed. The `.codex/INSTRUCTIONS.md` is a reference doc explaining what Codex supports and how to override instructions per project.
+## Related Guides
 
-> To customise behaviour without editing the Devflow-managed file, create `AGENTS.override.md` at the project root.
-
----
-
-## Gemini CLI
-
-```sh
-mkdir /tmp/demo-gemini && cd /tmp/demo-gemini
-git init
-npx devflow init --adapter gemini
-```
-
-Expected files:
-
-```
-AGENTS.md
-.gemini/
-  INSTRUCTIONS.md
-```
-
-**Verify:**
-
-```sh
-ls AGENTS.md .gemini/INSTRUCTIONS.md
-```
-
-**Use:** Gemini reads `GEMINI.md`, not `AGENTS.md`, at session start. Use `.gemini/INSTRUCTIONS.md` to map the Devflow core into a project `GEMINI.md`.
-
-> To customise behaviour without editing the Devflow-managed file, create `AGENTS.override.md` at the project root.
-
----
-
-## Installing multiple tools
-
-```sh
-mkdir /tmp/demo-all && cd /tmp/demo-all
-git init
-
-# Install everything at once
-npx devflow init --adapter all
-
-# Or layer adapters one by one (--merge skips existing files)
-npx devflow init --adapter cursor
-npx devflow init --adapter claude --merge
-npx devflow init --adapter codex  --merge
-npx devflow init --adapter gemini --merge
-```
-
----
-
-## Preview before installing
-
-Use `--dry-run` to see what would be written without touching anything:
-
-```sh
-npx devflow init --adapter claude --dry-run
-```
+- [Anywhere](../docs/anywhere.md)
+- [Cursor](../docs/cursor.md)
