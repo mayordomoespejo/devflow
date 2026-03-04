@@ -109,6 +109,31 @@ Useful flags:
 - `--verbose` includes adapter-level missing files
 - `--fix` prints safe fix guidance without making destructive changes
 
+## Explain
+
+Use `devflow explain` to show what Devflow has installed in a repository and where the working rules come from.
+
+It reports:
+
+- CLI version
+- installed core files and adapters
+- available workflows such as `plan`, `tests`, `review`, and `verify`
+- the project files that define Devflow behavior
+
+Examples:
+
+```sh
+npx devflow explain
+npx devflow explain --target ../other-repo
+npx devflow explain --json
+```
+
+Useful flags:
+
+- `--target <path>` inspects another directory
+- `--json` prints JSON only
+- `--verbose` includes exact source paths and adapter checks
+
 ## Quick Start In 30 Seconds
 
 1. Run:
