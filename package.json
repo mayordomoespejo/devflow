@@ -1,6 +1,6 @@
 {
   "name": "devflow-agent-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Portable AI development workflow kit with a universal core and optional adapters",
   "main": "dist/cli.js",
   "bin": {

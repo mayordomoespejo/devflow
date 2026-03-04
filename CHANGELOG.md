@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-03-04
+
+### Changed
+
+- Clarified npm usage in docs: prefer `npx` / `npm exec` for normal CLI use
+- Added `.npmignore` to avoid npm `gitignore-fallback` publish/install warnings
+
 ## [0.1.0] - 2026-03-04
 
 ### Added
@@ -20,5 +27,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - GitHub Actions CI for Node 18 and 20
 - Universal README, usage guides, and examples
 
-[Unreleased]: https://github.com/mayordomoespejo/devflow/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/mayordomoespejo/devflow/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/mayordomoespejo/devflow/releases/tag/v0.1.1
 [0.1.0]: https://github.com/mayordomoespejo/devflow/releases/tag/v0.1.0
