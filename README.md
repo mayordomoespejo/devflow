@@ -85,6 +85,30 @@ Useful flags:
 - `--force` overwrites only Devflow-managed paths: `AGENTS.md`, `DEVFLOW.md`, `devflow/`, `.cursor/`, `.devflow/`
 - `--dry-run` previews what would change
 
+## Doctor
+
+Use `devflow doctor` to inspect the current repository or another target and report:
+
+- whether the core is installed correctly
+- which adapters are present
+- missing files
+- recommended next commands
+
+Examples:
+
+```sh
+npx devflow doctor
+npx devflow doctor --target ../other-repo
+npx devflow doctor --json
+```
+
+Useful flags:
+
+- `--target <path>` inspects another directory
+- `--json` prints JSON only
+- `--verbose` includes adapter-level missing files
+- `--fix` prints safe fix guidance without making destructive changes
+
 ## Quick Start In 30 Seconds
 
 1. Run:
