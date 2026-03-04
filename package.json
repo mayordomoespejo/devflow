@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "node src/cli.js",
+    "test:ci-smoke": "node scripts/ci-smoke-test.mjs",
     "validate": "node scripts/validate-templates.mjs",
     "test": "node scripts/validate-templates.mjs && node scripts/smoke-test.mjs"
   },
