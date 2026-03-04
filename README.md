@@ -190,6 +190,13 @@ npm test
 
 This validates the template contract and runs the CLI smoke test.
 
+## Releases
+
+- Current version: `0.1.0`
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
+- Contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Security policy: [SECURITY.md](SECURITY.md)
+
 ## Tool Guides
 
 - [Anywhere](docs/anywhere.md)

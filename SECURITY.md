@@ -1,36 +1,55 @@
 # Security Policy
 
-## Supported versions
+## Supported Versions
 
-Only the latest published version of Devflow receives security fixes.
+Only the latest published release is supported for security fixes.
 
 | Version | Supported |
-|---------|-----------|
-| 0.1.x   | ✓ |
+| --- | --- |
+| 0.1.x | Yes |
 
-## What Devflow does
+## Security Model
 
-Devflow is a file-copy CLI. It reads template files bundled with the npm package and writes them to a target directory on your local filesystem.
+Devflow is a local file-installation CLI.
 
-- No network requests at runtime
-- No code execution beyond file I/O
-- No credentials, tokens, or secrets are read or written
-- `--force` only overwrites files within known managed paths (`AGENTS.md`, `.cursor`, `.claude`, `.codex`, `.gemini`)
+At runtime it:
 
-The primary attack surface is the template files themselves. A compromised npm package could install malicious instruction files into your project, which would be read by your AI coding tool.
+- reads files bundled in `templates/`
+- copies those files into a target repository
+- does not make network requests
+- does not manage credentials or secrets
 
-## Reporting a vulnerability
+The primary security concerns are:
 
-If you discover a security issue — including a supply-chain concern, a path traversal bug, or a template that could cause an AI tool to behave dangerously — please report it privately.
+- malicious or unsafe template content
+- unsafe overwrite behavior
+- path handling bugs
+- misleading documentation that causes unsafe agent behavior
 
-**Do not open a public GitHub issue for security vulnerabilities.**
+## Current Safeguards
 
-Report by email or via [GitHub private vulnerability reporting](https://github.com/mayordomoespejo/devflow/security/advisories/new).
+- `templates/` is the source of truth for installed files
+- `--force` only overwrites Devflow-managed paths:
+  `AGENTS.md`, `DEVFLOW.md`, `devflow/`, `.cursor/`, `.devflow/`
+- template validation checks required install assets
+- smoke tests verify the expected install outputs
+
+## Reporting A Vulnerability
+
+Do not report security issues in a public GitHub issue.
+
+Please use GitHub Security Advisories or a private contact channel for responsible disclosure.
 
 Include:
-- Description of the vulnerability
-- Steps to reproduce
-- Potential impact
-- Suggested fix (optional)
 
-You will receive a response within 5 business days. If confirmed, a fix will be released as a patch version and credited in the changelog.
+- a clear description of the issue
+- affected version
+- reproduction steps
+- impact
+- any suggested mitigation or fix
+
+## Response Expectations
+
+- acknowledgement within 5 business days
+- validation and triage as quickly as possible
+- a patch release when the issue is confirmed and fixable

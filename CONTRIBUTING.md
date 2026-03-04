@@ -1,115 +1,102 @@
-# Contributing to Devflow
+# Contributing
 
-Thank you for considering a contribution. This document covers the basics to get you started.
+Thanks for contributing to Devflow.
 
----
+Devflow is a small CLI with a strict product boundary:
 
-## What to contribute
+- `templates/` is the source of truth
+- the universal core comes first
+- adapters are optional and should only exist when the integration contract is clear
 
-- **Bug reports** — unexpected CLI behaviour, wrong files installed, broken flags
-- **Template improvements** — better instructions, more useful slash commands, rule refinements
-- **New tool support** — adding a new AI tool target (new template dir + CLI config + docs)
-- **Documentation** — corrections, clearer explanations, additional examples
+## Before You Change Anything
 
-If you are unsure whether an idea fits the project, open an issue before writing code.
+Use this order:
 
----
+1. Understand the problem
+2. Identify the affected files
+3. Propose the smallest useful change
+4. Update tests or validation if behavior changes
+5. Verify the result locally
 
-## Project structure
+## Project Structure
 
-```
-src/cli.js                 # CLI entry point (Node.js, CJS)
+```txt
+src/cli.js
 templates/
-  common/AGENTS.md         # installed for every tool
-  cursor/.cursor/          # Cursor commands and rules
-  claude/.claude/          # Claude Code commands and rules
-  codex/INSTRUCTIONS.md    # reference doc → .codex/
-  gemini/INSTRUCTIONS.md   # reference doc → .gemini/
+  core/
+  prompts/
+  adapters/
 scripts/
-  validate-templates.mjs   # fails if any required template is missing
-  smoke-test.mjs           # integration tests (install + verify)
-docs/                      # per-tool setup guides
-examples/                  # demo walkthroughs
-.github/workflows/ci.yml   # GitHub Actions: Node 18 + 20 matrix
+docs/
+examples/
+.github/workflows/
 ```
 
----
+Key rule:
 
-## Development setup
+- if installation behavior changes, update `templates/`, validation, smoke tests, and docs together
 
-Requirements: Node.js 18+, npm.
+## Local Setup
+
+Requirements:
+
+- Node.js 18+
+- npm
+
+Install dependencies:
 
 ```sh
-git clone https://github.com/mayordomoespejo/devflow.git
-cd devflow
-npm install
+npm ci
 ```
 
-Run the full test suite:
+Run checks:
 
 ```sh
+npm run validate
+npm run test:ci-smoke
 npm test
 ```
 
-This runs template validation followed by the CLI smoke tests against temporary directories. No network access required.
+## Contribution Guidelines
 
----
+- Prefer modifying existing code over adding abstractions
+- Keep the CLI behavior explicit and predictable
+- Do not invent integrations for tools unless the format is well-defined
+- Treat documentation adapters as documentation, not as fake config
+- Keep docs aligned with the actual installed output
 
-## Adding or changing templates
+## Changing Templates
 
-1. Edit files under `templates/`.
-2. If you add a new required file, add it to the `REQUIRED` array in `scripts/validate-templates.mjs`.
-3. If the new file changes the install output, add the corresponding `check()` call to `scripts/smoke-test.mjs`.
-4. Run `npm test` — all checks must pass before opening a PR.
+If you add or rename installed files:
 
----
+1. Update the relevant files under `templates/`
+2. Update `scripts/validate-templates.mjs` if required template files change
+3. Update smoke tests if install output changes
+4. Update docs and examples
 
-## Adding a new tool target
+## Changing CLI Behavior
 
-1. Create `templates/<tool>/` with the appropriate files.
-2. Add a `TOOL_CONFIG` entry in `src/cli.js`:
-   ```js
-   newtool: {
-     srcDir:  'newtool',
-     destDir: '.newtool',   // or '' for target root
-     keyFile: path.join('.newtool', 'INSTRUCTIONS.md'),
-   },
-   ```
-3. Add required files to `scripts/validate-templates.mjs`.
-4. Add smoke-test checks for the new target in `scripts/smoke-test.mjs`.
-5. Create `docs/newtool.md` following the pattern of the existing tool docs.
-6. Link the new doc from `README.md`.
-7. Run `npm test`.
+If you change `devflow init`:
 
----
+1. Update `src/cli.js`
+2. Update smoke tests
+3. Update `README.md` and any affected guide in `docs/`
+4. Update `CHANGELOG.md`
 
-## Commit style
+## Pull Requests
 
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
+- Keep changes focused
+- Prefer one concern per PR
+- Make sure the relevant checks pass locally
+- Document user-visible changes in `CHANGELOG.md` under `Unreleased`
 
+## Commit Style
+
+Prefer conventional-style commit messages, for example:
+
+```text
+feat(cli): add adapter autodetection
+docs: rewrite anywhere guide
+ci: add smoke tests for core + adapters
+chore: add changelog and community docs
 ```
-feat(cli): add --reset flag
-fix(templates): correct claude rule path
-docs: update gemini setup guide
-chore: bump version to 0.2.0
-```
-
----
-
-## Pull requests
-
-- Keep PRs focused — one concern per PR.
-- `npm test` must pass.
-- Update `CHANGELOG.md` under `[Unreleased]` describing what changed.
-- Link the relevant issue if one exists.
-
----
-
-## Reporting bugs
-
-Open an issue at <https://github.com/mayordomoespejo/devflow/issues> with:
-
-- Node.js version (`node --version`)
-- Operating system
-- The exact command you ran
-- Expected vs actual output
