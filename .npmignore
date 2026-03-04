@@ -1,0 +1,11 @@
+.git
+.github
+.codex
+.cursor
+.claude
+docs
+node_modules
+scripts
+src
+tsconfig.json
+.gitignore

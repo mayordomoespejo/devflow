@@ -12,6 +12,8 @@ The most portable setup is:
 npx devflow-agent-cli init
 ```
 
+Prefer `npx` or `npm exec` over `npm i devflow-agent-cli`. Installing the package into an existing project is unnecessary for normal use and can fail if that project already has peer dependency conflicts.
+
 If you want explicit guidance files for non-integrated environments, use:
 
 ```sh

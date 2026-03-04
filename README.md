@@ -93,6 +93,8 @@ Install into the current repository:
 npx devflow-agent-cli init
 ```
 
+Use `npx` or `npm exec` for normal usage. Avoid `npm i devflow-agent-cli` inside an existing project unless you intentionally want to add the CLI to that project's dependencies, because `npm install` resolves against the current project's dependency tree and can fail on unrelated peer conflicts.
+
 Install with the Cursor adapter:
 
 ```sh
