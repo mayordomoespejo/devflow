@@ -33,19 +33,12 @@ const ADAPTER_CONFIG = {
     destDir: path.join('.devflow', 'adapters', 'gemini'),
     keyFile: path.join('.devflow', 'adapters', 'gemini', 'README.md'),
   },
-  anthropic: {
-    srcDir:  path.join('adapters', 'anthropic'),
-    destDir: path.join('.devflow', 'adapters', 'anthropic'),
-    keyFile: path.join('.devflow', 'adapters', 'anthropic', 'README.md'),
-  },
   generic: {
     srcDir:  path.join('adapters', 'generic'),
     destDir: '.devflow',
     keyFile: path.join('.devflow', 'README.md'),
   },
 };
-
-const ADAPTER_ALIASES = {};
 
 const ALL_ADAPTERS = Object.keys(ADAPTER_CONFIG);
 const DEFAULT_CURSOR_MARKER = '.cursor';
@@ -63,6 +56,7 @@ const DOCTOR_ADAPTERS = {
   cursor: {
     expected: [
       path.join('.cursor', 'commands', 'plan.md'),
+      path.join('.cursor', 'commands', 'build.md'),
       path.join('.cursor', 'commands', 'tests.md'),
       path.join('.cursor', 'commands', 'review.md'),
       path.join('.cursor', 'commands', 'verify.md'),
@@ -80,9 +74,6 @@ const DOCTOR_ADAPTERS = {
   },
   gemini: {
     expected: [path.join('.devflow', 'adapters', 'gemini', 'README.md')],
-  },
-  anthropic: {
-    expected: [path.join('.devflow', 'adapters', 'anthropic', 'README.md')],
   },
 };
 
@@ -145,7 +136,6 @@ function parseAdapterList(raw) {
   const adapters = raw
     .split(',')
     .map((tool) => tool.trim().toLowerCase())
-    .map((tool) => ADAPTER_ALIASES[tool] ?? tool)
     .filter(Boolean);
 
   if (adapters.includes('all') && adapters.length > 1) {

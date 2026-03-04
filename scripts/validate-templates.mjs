@@ -28,14 +28,14 @@ const REQUIRED_CORE = [
 
 const REQUIRED_CURSOR_ADAPTER = [
   'adapters/cursor/.cursor/commands/plan.md',
-  'adapters/cursor/.cursor/commands/review.md',
+  'adapters/cursor/.cursor/commands/build.md',
   'adapters/cursor/.cursor/commands/tests.md',
+  'adapters/cursor/.cursor/commands/review.md',
   'adapters/cursor/.cursor/commands/verify.md',
   'adapters/cursor/.cursor/rules/typescript.md',
 ];
 
 const REQUIRED_GUIDE_ADAPTERS = [
-  'adapters/anthropic/README.md',
   'adapters/claude/README.md',
   'adapters/codex/README.md',
   'adapters/gemini/README.md',

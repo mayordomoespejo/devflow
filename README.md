@@ -66,7 +66,7 @@ Adapters are optional and exist only to make the core easier to use in a specifi
 
 - `cursor` installs Cursor-facing command and rule files
 - `generic` installs usage instructions for any unsupported chat or IDE
-- `claude`, `codex`, `gemini`, and `anthropic` currently install guidance under `.devflow/adapters/` without inventing unsupported config
+- `claude`, `codex`, and `gemini` currently install guidance under `.devflow/adapters/` without inventing unsupported config
 
 If Devflow does not know a tool's official integration format, it does not fake one.
 
@@ -204,7 +204,6 @@ Current adapter model:
 | `claude` | documentation adapter | `.devflow/adapters/claude/README.md` |
 | `codex` | documentation adapter | `.devflow/adapters/codex/README.md` |
 | `gemini` | documentation adapter | `.devflow/adapters/gemini/README.md` |
-| `anthropic` | documentation adapter | `.devflow/adapters/anthropic/README.md` |
 
 This keeps the product honest:
 

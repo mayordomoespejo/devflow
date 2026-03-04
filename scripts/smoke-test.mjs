@@ -1,9 +1,4 @@
 #!/usr/bin/env node
-/**
- * Smoke test for devflow CLI.
- * Creates isolated temp directories, runs installs per tool, checks expected files.
- * Exit code 0 = all pass, 1 = any failure.
- */
 
 import { execSync }                   from 'node:child_process';
 import { mkdtempSync, mkdirSync,
@@ -63,7 +58,7 @@ function section(title) {
 const tmp = mkdtempSync(join(tmpdir(), 'devflow-smoke-'));
 const targets = {};
 
-for (const install of ['default-generic', 'default-cursor', 'none', 'cursor', 'claude', 'codex', 'gemini', 'anthropic', 'generic', 'multi']) {
+for (const install of ['default-generic', 'default-cursor', 'none', 'cursor', 'claude', 'codex', 'gemini', 'generic', 'multi']) {
   targets[install] = join(tmp, install);
   mkdirSync(targets[install]);
 }
@@ -84,7 +79,6 @@ try {
   run('claude',          `init --adapter claude          --target "${targets.claude}"             --merge`);
   run('codex',           `init --adapter codex           --target "${targets.codex}"              --merge`);
   run('gemini',          `init --adapter gemini          --target "${targets.gemini}"             --merge`);
-  run('anthropic',       `init --adapter anthropic       --target "${targets.anthropic}"          --merge`);
   run('generic',         `init --adapter generic         --target "${targets.generic}"            --merge`);
   run('multi',           `init --adapters cursor,generic --target "${targets.multi}"              --merge`);
 
@@ -115,6 +109,7 @@ try {
 
   section('cursor target');
   check(join(targets.cursor, '.cursor', 'commands', 'plan.md'),    '.cursor/commands/plan.md');
+  check(join(targets.cursor, '.cursor', 'commands', 'build.md'),   '.cursor/commands/build.md');
   check(join(targets.cursor, '.cursor', 'commands', 'review.md'),  '.cursor/commands/review.md');
   check(join(targets.cursor, '.cursor', 'rules', 'typescript.md'), '.cursor/rules/typescript.md');
 
@@ -126,9 +121,6 @@ try {
 
   section('gemini target');
   check(join(targets.gemini, '.devflow', 'adapters', 'gemini', 'README.md'), '.devflow/adapters/gemini/README.md');
-
-  section('anthropic target');
-  check(join(targets.anthropic, '.devflow', 'adapters', 'anthropic', 'README.md'), '.devflow/adapters/anthropic/README.md');
 
   section('generic target');
   check(join(targets.generic, '.devflow', 'README.md'), '.devflow/README.md');

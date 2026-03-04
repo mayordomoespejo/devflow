@@ -1,6 +1,6 @@
 # Devflow
 
-# Cursor local config (si algún día aparece)
+# Local tool configs
 .cursor-local
 .cursor/
 .claude/

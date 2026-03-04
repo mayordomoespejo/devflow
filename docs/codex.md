@@ -2,10 +2,12 @@
 
 ## What gets installed
 
-```
+```txt
 AGENTS.md
-.codex/
-  INSTRUCTIONS.md   ← reference doc, not auto-read by Codex
+DEVFLOW.md
+.devflow/workflows.yml
+devflow/prompts/
+.devflow/adapters/codex/README.md
 ```
 
 ## Setup checklist
@@ -14,9 +16,8 @@ AGENTS.md
 - [ ] `AGENTS.md` exists at the project root
 - [ ] `DEVFLOW.md` exists at the project root
 - [ ] `devflow/prompts/` exists at the project root
-- [ ] `.codex/INSTRUCTIONS.md` exists
 - [ ] Run Codex from the project root — `AGENTS.md` is loaded automatically at session start
-- [ ] Commit: `git add AGENTS.md .codex && git commit -m "chore: add Devflow Codex workflow"`
+- [ ] Commit: `git add AGENTS.md DEVFLOW.md devflow/ .devflow/ && git commit -m "chore: add Devflow Codex workflow"`
 
 ---
 
@@ -44,8 +45,6 @@ Codex loads `AGENTS.md` hierarchically — all files are merged, with later entr
 1. `~/.codex/AGENTS.md` — global, applies to every session
 2. `<project>/AGENTS.md` — project-level, installed by Devflow
 3. Subdirectory `AGENTS.md` files, scoped to their directory
-
-`.codex/INSTRUCTIONS.md` is a reference doc. Codex does not read it automatically — it is there for developers to understand what Codex supports and how to extend the setup.
 
 ---
 

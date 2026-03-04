@@ -131,7 +131,8 @@ Current adapter status:
 
 | Harness | Integration |
 |---------|-------------|
-| Cursor | `/plan`, `/review`, `/tests`, `/verify` slash commands |
-| Claude | Documentation-only adapter. Follow `templates/adapters/claude/README.md` |
-| Codex CLI | Documentation-only adapter. Follow `templates/adapters/codex/README.md` |
-| Any other | Use `templates/adapters/generic/README.md` and copy prompts from `devflow/prompts/` |
+| Cursor | `/plan`, `/build`, `/tests`, `/review`, `/verify` slash commands |
+| Claude | Documentation-only adapter. See `.devflow/adapters/claude/README.md` |
+| Codex CLI | Documentation-only adapter. See `.devflow/adapters/codex/README.md` |
+| Gemini CLI | Documentation-only adapter. See `.devflow/adapters/gemini/README.md` |
+| Any other | Use `.devflow/README.md` and copy prompts from `devflow/prompts/` |

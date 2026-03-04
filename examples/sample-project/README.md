@@ -35,11 +35,14 @@ Devflow: installing into /home/you/projects/demo-cursor
 
   ✓  AGENTS.md
   ✓  DEVFLOW.md
-  ✓  devflow/prompts/plan.md
-  ✓  devflow/prompts/review.md
-  ✓  devflow/prompts/tests.md
-  ✓  devflow/prompts/verify.md
+  ✓  .devflow/workflows.yml
+  ✓  devflow/prompts/plan.txt
+  ✓  devflow/prompts/build.txt
+  ✓  devflow/prompts/tests.txt
+  ✓  devflow/prompts/review.txt
+  ✓  devflow/prompts/verify.txt
   ✓  .cursor/commands/plan.md
+  ✓  .cursor/commands/build.md
   ✓  .cursor/commands/review.md
   ✓  .cursor/commands/tests.md
   ✓  .cursor/commands/verify.md
@@ -51,21 +54,10 @@ Done. Devflow installed successfully.
 ### 3. Verify
 
 ```sh
-ls AGENTS.md
-ls DEVFLOW.md
+ls AGENTS.md DEVFLOW.md
 ls devflow/prompts/
 ls .cursor/commands/
 ls .cursor/rules/
-```
-
-Expected:
-
-```
-AGENTS.md
-DEVFLOW.md
-devflow/prompts/  plan.md  review.md  tests.md  verify.md
-.cursor/commands/  plan.md  review.md  tests.md  verify.md
-.cursor/rules/     typescript.md
 ```
 
 ### 4. Use the workflow
@@ -73,15 +65,16 @@ devflow/prompts/  plan.md  review.md  tests.md  verify.md
 Open the project in Cursor. In the AI chat panel:
 
 - `/plan implement a user authentication module` — generates an ordered implementation plan before writing any code
-- `/review` — reviews your latest changes as a senior engineer would
+- `/build` — implements the agreed plan with the minimum scope
 - `/tests` — generates test cases for the current file or selection
+- `/review` — reviews your latest changes as a senior engineer would
 - `/verify` — runs a pre-finish checklist (edge cases, error handling, types)
 
 TypeScript rules in `.cursor/rules/typescript.md` are applied automatically to every conversation.
 
 ---
 
-## Claude Code
+## Claude
 
 ### 1. Create a dummy repo
 
@@ -105,15 +98,13 @@ Devflow: installing into /home/you/projects/demo-claude
 
   ✓  AGENTS.md
   ✓  DEVFLOW.md
-  ✓  devflow/prompts/plan.md
-  ✓  devflow/prompts/review.md
-  ✓  devflow/prompts/tests.md
-  ✓  devflow/prompts/verify.md
-  ✓  .claude/commands/plan.md
-  ✓  .claude/commands/review.md
-  ✓  .claude/commands/tests.md
-  ✓  .claude/commands/verify.md
-  ✓  .claude/rules/typescript.md
+  ✓  .devflow/workflows.yml
+  ✓  devflow/prompts/plan.txt
+  ✓  devflow/prompts/build.txt
+  ✓  devflow/prompts/tests.txt
+  ✓  devflow/prompts/review.txt
+  ✓  devflow/prompts/verify.txt
+  ✓  .devflow/adapters/claude/README.md
 
 Done. Devflow installed successfully.
 ```
@@ -121,33 +112,21 @@ Done. Devflow installed successfully.
 ### 3. Verify
 
 ```sh
-ls AGENTS.md
-ls DEVFLOW.md
+ls AGENTS.md DEVFLOW.md
 ls devflow/prompts/
-ls .claude/commands/
-ls .claude/rules/
-```
-
-Expected:
-
-```
-AGENTS.md
-DEVFLOW.md
-devflow/prompts/  plan.md  review.md  tests.md  verify.md
-.claude/commands/  plan.md  review.md  tests.md  verify.md
-.claude/rules/     typescript.md
+ls .devflow/adapters/claude/
 ```
 
 ### 4. Use the workflow
 
-Open the project with the `claude` CLI (Claude Code). In the chat:
+This is a documentation adapter. The workflow is delivered through `AGENTS.md` and the reusable prompts.
 
-- `/plan implement a paginated API endpoint` — Claude reads the command from `.claude/commands/plan.md` and produces a step-by-step plan
-- `/review` — senior engineer review of staged or current changes
-- `/tests` — generate test cases for the selected code
-- `/verify` — pre-finish verification checklist
+- Share `AGENTS.md` with the model at the start of each session
+- Use `devflow/prompts/plan.txt` before writing code
+- Use `devflow/prompts/review.txt` for a senior engineer review
+- Use `devflow/prompts/verify.txt` before finishing
 
-TypeScript rules in `.claude/rules/typescript.md` are loaded automatically.
+See `.devflow/adapters/claude/README.md` for the full guide.
 
 ---
 
@@ -175,11 +154,13 @@ Devflow: installing into /home/you/projects/demo-codex
 
   ✓  AGENTS.md
   ✓  DEVFLOW.md
-  ✓  devflow/prompts/plan.md
-  ✓  devflow/prompts/review.md
-  ✓  devflow/prompts/tests.md
-  ✓  devflow/prompts/verify.md
-  ✓  .codex/INSTRUCTIONS.md
+  ✓  .devflow/workflows.yml
+  ✓  devflow/prompts/plan.txt
+  ✓  devflow/prompts/build.txt
+  ✓  devflow/prompts/tests.txt
+  ✓  devflow/prompts/review.txt
+  ✓  devflow/prompts/verify.txt
+  ✓  .devflow/adapters/codex/README.md
 
 Done. Devflow installed successfully.
 ```
@@ -187,18 +168,14 @@ Done. Devflow installed successfully.
 ### 3. Verify
 
 ```sh
-ls AGENTS.md DEVFLOW.md .codex/INSTRUCTIONS.md
+ls AGENTS.md DEVFLOW.md
 ls devflow/prompts/
+ls .devflow/adapters/codex/
 ```
 
 ### 4. Use the workflow
 
 Codex reads `AGENTS.md` at session start. All instructions from the file are active automatically — no slash commands or rules files are needed.
-
-The `.codex/INSTRUCTIONS.md` file explains:
-- how Codex loads instruction files hierarchically
-- what features it does and does not support
-- how to override instructions per project
 
 **Override pattern** — to customise without editing the Devflow-managed file:
 
@@ -239,11 +216,13 @@ Devflow: installing into /home/you/projects/demo-gemini
 
   ✓  AGENTS.md
   ✓  DEVFLOW.md
-  ✓  devflow/prompts/plan.md
-  ✓  devflow/prompts/review.md
-  ✓  devflow/prompts/tests.md
-  ✓  devflow/prompts/verify.md
-  ✓  .gemini/INSTRUCTIONS.md
+  ✓  .devflow/workflows.yml
+  ✓  devflow/prompts/plan.txt
+  ✓  devflow/prompts/build.txt
+  ✓  devflow/prompts/tests.txt
+  ✓  devflow/prompts/review.txt
+  ✓  devflow/prompts/verify.txt
+  ✓  .devflow/adapters/gemini/README.md
 
 Done. Devflow installed successfully.
 ```
@@ -251,29 +230,22 @@ Done. Devflow installed successfully.
 ### 3. Verify
 
 ```sh
-ls AGENTS.md DEVFLOW.md .gemini/INSTRUCTIONS.md
+ls AGENTS.md DEVFLOW.md
 ls devflow/prompts/
+ls .devflow/adapters/gemini/
 ```
 
 ### 4. Use the workflow
 
-Gemini reads `GEMINI.md`, not `AGENTS.md`, at session start. Use `.gemini/INSTRUCTIONS.md` to create a project `GEMINI.md` that imports the Devflow core.
-
-The `.gemini/INSTRUCTIONS.md` file explains:
-- how Gemini loads instruction files
-- what features it does and does not support
-- how to override instructions per project
-
-**Override pattern** — to customise without editing the Devflow-managed file:
+Gemini reads `GEMINI.md`, not `AGENTS.md`, at session start. Create `GEMINI.md` to import the Devflow workflow:
 
 ```sh
-cat > AGENTS.override.md << 'EOF'
-# My project overrides
-
-Use pnpm instead of npm.
-Prefer Zod for input validation.
+cat > GEMINI.md << 'EOF'
+@./AGENTS.md
 EOF
 ```
+
+See `.devflow/adapters/gemini/README.md` and `docs/gemini.md` for the full guide.
 
 ---
 
@@ -285,25 +257,22 @@ EOF
 mkdir ~/projects/demo-all
 cd ~/projects/demo-all
 git init
-npx devflow init --adapter all
+npx devflow init --adapters all
 ```
 
 ### Verify
 
 ```sh
-ls AGENTS.md
-ls DEVFLOW.md
+ls AGENTS.md DEVFLOW.md
 ls devflow/prompts/
 ls .cursor/commands/ .cursor/rules/
-ls .claude/commands/ .claude/rules/
-ls .codex/
-ls .gemini/
+ls .devflow/adapters/
 ```
 
 ### Commit the installed files
 
 ```sh
-git add AGENTS.md DEVFLOW.md devflow/ .cursor .claude .codex .gemini
+git add AGENTS.md DEVFLOW.md devflow/ .devflow/ .cursor/
 git commit -m "chore: add Devflow AI workflow files"
 ```
 
@@ -316,7 +285,7 @@ Every team member who clones the repo gets the same workflow files — no per-de
 When Devflow releases new template versions, refresh with `--force`:
 
 ```sh
-npx devflow init --adapter all --force
+npx devflow init --adapters all --force
 ```
 
-This overwrites all Devflow-managed files (`AGENTS.md`, `.cursor`, `.claude`, `.codex`, `.gemini`) and leaves everything else untouched.
+This overwrites all Devflow-managed files and leaves everything else untouched.

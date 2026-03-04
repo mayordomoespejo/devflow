@@ -155,6 +155,7 @@ What you get:
 
 - all core files
 - `.cursor/commands/plan.md`
+- `.cursor/commands/build.md`
 - `.cursor/commands/tests.md`
 - `.cursor/commands/review.md`
 - `.cursor/commands/verify.md`
@@ -166,6 +167,7 @@ In Cursor chat:
 
 ```text
 /plan add audit logging to the billing webhook
+/build implement the accepted plan
 /tests cover invalid payloads and retry handling
 /review focus on duplicate logic and security
 /verify against the accepted plan
