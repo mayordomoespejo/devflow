@@ -8,39 +8,48 @@ const path = require('path');
 const pkg = require('../package.json');
 const TEMPLATES_ROOT = path.join(__dirname, '..', 'templates');
 
-// Per-tool configuration:
-//   srcDir  — subdirectory inside templates/
+// Per-adapter configuration:
+//   srcDir  — subdirectory inside templates/adapters/
 //   destDir — prefix applied to every file's destination inside the target
 //             ('' = target root, '.codex' = <target>/.codex/)
 //   keyFile — file checked by post-install validation (relative to target)
-const TOOL_CONFIG = {
+const ADAPTER_CONFIG = {
   cursor: {
-    srcDir:  'cursor',
+    srcDir:  path.join('adapters', 'cursor'),
     destDir: '',
     keyFile: path.join('.cursor', 'commands', 'plan.md'),
   },
   claude: {
-    srcDir:  'claude',
+    srcDir:  path.join('adapters', 'claude-code'),
     destDir: '',
     keyFile: path.join('.claude', 'commands', 'plan.md'),
   },
   codex: {
-    srcDir:  'codex',
+    srcDir:  path.join('adapters', 'codex'),
     destDir: '.codex',
     keyFile: path.join('.codex', 'INSTRUCTIONS.md'),
   },
   gemini: {
-    srcDir:  'gemini',
+    srcDir:  path.join('adapters', 'gemini'),
     destDir: '.gemini',
     keyFile: path.join('.gemini', 'INSTRUCTIONS.md'),
   },
+  generic: {
+    srcDir:  path.join('adapters', 'generic'),
+    destDir: '.devflow',
+    keyFile: path.join('.devflow', 'SETUP.md'),
+  },
 };
 
-const ALL_TOOLS = Object.keys(TOOL_CONFIG);
+const ALL_TOOLS = Object.keys(ADAPTER_CONFIG);
 
 // Paths Devflow is allowed to create or overwrite.
 // --force will never touch files outside these prefixes.
-const MANAGED_PREFIXES = new Set(['AGENTS.md', '.cursor', '.claude', '.codex', '.gemini']);
+const MANAGED_PREFIXES = new Set([
+  'AGENTS.md', 'DEVFLOW.md',
+  '.cursor', '.claude', '.codex', '.gemini', '.devflow',
+  'devflow',
+]);
 
 function isManaged(dest) {
   return MANAGED_PREFIXES.has(dest.split(path.sep)[0]);
@@ -63,14 +72,14 @@ function collectFiles(dir, base = '') {
 }
 
 // Returns [{ src: absolutePath, dest: relPathInTarget }].
-// common/ is always included at target root.
-// Each tool's srcDir is mapped to its destDir.
+// core/ is always included at target root.
+// Each adapter's srcDir is mapped to its destDir.
 function buildInstallList(tools) {
   const sources = [
-    { srcDir: path.join(TEMPLATES_ROOT, 'common'), destPrefix: '' },
+    { srcDir: path.join(TEMPLATES_ROOT, 'core'), destPrefix: '' },
   ];
   for (const tool of tools) {
-    const { srcDir, destDir } = TOOL_CONFIG[tool];
+    const { srcDir, destDir } = ADAPTER_CONFIG[tool];
     sources.push({ srcDir: path.join(TEMPLATES_ROOT, srcDir), destPrefix: destDir });
   }
 
@@ -88,7 +97,7 @@ function buildInstallList(tools) {
 function parseTools(raw) {
   if (!raw || raw === 'all') return ALL_TOOLS;
   const tools = raw.split(',').map((t) => t.trim().toLowerCase());
-  const invalid = tools.filter((t) => !Object.prototype.hasOwnProperty.call(TOOL_CONFIG, t));
+  const invalid = tools.filter((t) => !Object.prototype.hasOwnProperty.call(ADAPTER_CONFIG, t));
   if (invalid.length > 0) {
     console.error(`Error: unknown tool(s): ${invalid.join(', ')}`);
     console.error(`Valid values: ${ALL_TOOLS.join(', ')}, all`);
@@ -120,14 +129,17 @@ function copyItem({ src, dest }, targetDir) {
   fs.copyFileSync(src, destPath);
 }
 
-// Checks AGENTS.md (always) + one key file per selected tool.
+// Checks AGENTS.md + DEVFLOW.md (always) + one key file per selected adapter.
 function validate(tools, targetDir) {
   const failures = [];
   if (!exists('AGENTS.md', targetDir)) {
-    failures.push('AGENTS.md (from common)');
+    failures.push('AGENTS.md (from core)');
+  }
+  if (!exists('DEVFLOW.md', targetDir)) {
+    failures.push('DEVFLOW.md (from core)');
   }
   for (const tool of tools) {
-    const { keyFile } = TOOL_CONFIG[tool];
+    const { keyFile } = ADAPTER_CONFIG[tool];
     if (keyFile && !exists(keyFile, targetDir)) {
       failures.push(`${keyFile} (${tool})`);
     }
@@ -225,19 +237,19 @@ function runInit(options) {
 
 program
   .name('devflow')
-  .description('AI-assisted development toolkit for Cursor, Claude Code, Codex, and Gemini')
+  .description('Universal AI development workflow toolkit — Cursor, Claude Code, Codex, Gemini, and any chat interface')
   .version(pkg.version, '-v, --version');
 
 program
   .command('init')
-  .description('Install Devflow into the current project')
+  .description('Install Devflow core and optional adapters into the current project')
   .option('-f, --force', 'overwrite existing Devflow-managed files')
   .option('-m, --merge', 'install only files that do not yet exist (skip conflicts)')
   .option('-n, --dry-run', 'preview operations without writing')
   .option('-t, --target <path>', 'install into a different directory', process.cwd())
   .option(
     '--tool <tools>',
-    `comma-separated tools to install: ${ALL_TOOLS.join(', ')}, all`,
+    `comma-separated adapters: ${ALL_TOOLS.join(', ')}, all`,
     'all',
   )
   .action(runInit);
