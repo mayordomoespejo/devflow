@@ -11,7 +11,6 @@ const TEMPLATES_ROOT = path.join(__dirname, '..', 'templates');
 // Per-adapter configuration:
 //   srcDir  — subdirectory inside templates/adapters/
 //   destDir — prefix applied to every file's destination inside the target
-//             ('' = target root, '.codex' = <target>/.codex/)
 //   keyFile — file checked by post-install validation (relative to target)
 const ADAPTER_CONFIG = {
   cursor: {
@@ -19,7 +18,7 @@ const ADAPTER_CONFIG = {
     destDir: '',
     keyFile: path.join('.cursor', 'commands', 'plan.md'),
   },
-  claude: {
+  'claude-code': {
     srcDir:  path.join('adapters', 'claude-code'),
     destDir: path.join('.devflow', 'adapters', 'claude-code'),
     keyFile: path.join('.devflow', 'adapters', 'claude-code', 'README.md'),
@@ -36,7 +35,12 @@ const ADAPTER_CONFIG = {
   },
 };
 
-const ALL_TOOLS = Object.keys(ADAPTER_CONFIG);
+const ADAPTER_ALIASES = {
+  claude: 'claude-code',
+};
+
+const ALL_ADAPTERS = Object.keys(ADAPTER_CONFIG);
+const DEFAULT_CURSOR_MARKER = '.cursor';
 const CORE_KEY_FILES = [
   'AGENTS.md',
   'DEVFLOW.md',
@@ -79,13 +83,13 @@ function collectFiles(dir, base = '') {
 // core/ root files (AGENTS.md, DEVFLOW.md) go to target root.
 // prompts/ goes to target/devflow/prompts/ (namespaced to avoid clashes).
 // Each adapter's srcDir is mapped to its destDir.
-function buildInstallList(tools) {
+function buildInstallList(adapters) {
   const sources = [
     { srcDir: path.join(TEMPLATES_ROOT, 'core'),    destPrefix: '' },
     { srcDir: path.join(TEMPLATES_ROOT, 'prompts'), destPrefix: path.join('devflow', 'prompts') },
   ];
-  for (const tool of tools) {
-    const { srcDir, destDir } = ADAPTER_CONFIG[tool];
+  for (const adapter of adapters) {
+    const { srcDir, destDir } = ADAPTER_CONFIG[adapter];
     sources.push({ srcDir: path.join(TEMPLATES_ROOT, srcDir), destPrefix: destDir });
   }
 
@@ -100,23 +104,41 @@ function buildInstallList(tools) {
   return items;
 }
 
-function parseTools(raw) {
+function parseAdapterList(raw) {
   if (!raw) return [];
-  if (raw === 'all') return ALL_TOOLS;
 
-  const tools = raw
+  const adapters = raw
     .split(',')
     .map((tool) => tool.trim().toLowerCase())
+    .map((tool) => ADAPTER_ALIASES[tool] ?? tool)
     .filter(Boolean);
 
-  const invalid = tools.filter((tool) => !Object.prototype.hasOwnProperty.call(ADAPTER_CONFIG, tool));
-  if (invalid.length > 0) {
-    console.error(`Error: unknown adapter(s): ${invalid.join(', ')}`);
-    console.error(`Valid values: ${ALL_TOOLS.join(', ')}, all`);
+  if (adapters.includes('all') && adapters.length > 1) {
+    console.error('Error: "all" cannot be combined with other adapters.');
     process.exit(1);
   }
 
-  return [...new Set(tools)];
+  if (adapters.includes('none') && adapters.length > 1) {
+    console.error('Error: "none" cannot be combined with other adapters.');
+    process.exit(1);
+  }
+
+  if (adapters.length === 1 && adapters[0] === 'all') {
+    return ALL_ADAPTERS;
+  }
+
+  if (adapters.length === 1 && adapters[0] === 'none') {
+    return [];
+  }
+
+  const invalid = adapters.filter((adapter) => !Object.prototype.hasOwnProperty.call(ADAPTER_CONFIG, adapter));
+  if (invalid.length > 0) {
+    console.error(`Error: unknown adapter(s): ${invalid.join(', ')}`);
+    console.error(`Valid values: ${ALL_ADAPTERS.join(', ')}, none, all`);
+    process.exit(1);
+  }
+
+  return [...new Set(adapters)];
 }
 
 function resolveTarget(raw) {
@@ -143,7 +165,7 @@ function copyItem({ src, dest }, targetDir) {
 }
 
 // Checks core files (always) + one key file per selected adapter.
-function validate(tools, targetDir) {
+function validate(adapters, targetDir) {
   const failures = [];
 
   for (const file of CORE_KEY_FILES) {
@@ -152,13 +174,36 @@ function validate(tools, targetDir) {
     }
   }
 
-  for (const tool of tools) {
-    const { keyFile } = ADAPTER_CONFIG[tool];
+  for (const adapter of adapters) {
+    const { keyFile } = ADAPTER_CONFIG[adapter];
     if (keyFile && !exists(keyFile, targetDir)) {
-      failures.push(`${keyFile} (${tool})`);
+      failures.push(`${keyFile} (${adapter})`);
     }
   }
   return failures;
+}
+
+function detectDefaultAdapters(targetDir) {
+  if (fs.existsSync(path.join(targetDir, DEFAULT_CURSOR_MARKER))) {
+    return ['cursor'];
+  }
+
+  return ['generic'];
+}
+
+function resolveAdapters(options, targetDir) {
+  const adapterArg = options.adapters ?? options.adapter ?? options.tool;
+
+  if (options.adapters && (options.adapter || options.tool)) {
+    console.error('Error: use either --adapter/--tool or --adapters, not both.');
+    process.exit(1);
+  }
+
+  if (!adapterArg) {
+    return detectDefaultAdapters(targetDir);
+  }
+
+  return parseAdapterList(adapterArg);
 }
 
 // ─── init command ────────────────────────────────────────────────────────────
@@ -168,12 +213,11 @@ function runInit(options) {
   const dryRun   = Boolean(options.dryRun);
   const force    = Boolean(options.force);
   const merge    = Boolean(options.merge) && !force; // force wins over merge
-  const adapterArg = options.adapter ?? options.tool;
-  const tools      = parseTools(adapterArg);
+  const adapters = resolveAdapters(options, targetDir);
 
   let items;
   try {
-    items = buildInstallList(tools);
+    items = buildInstallList(adapters);
   } catch (err) {
     console.error(`Error: could not read templates.\n${err.message}`);
     process.exit(1);
@@ -196,7 +240,7 @@ function runInit(options) {
 
   if (dryRun) {
     const modeLabel = force ? ' --force' : merge ? ' --merge' : '';
-    const installLabel = tools.length > 0 ? `core + ${tools.join(', ')}` : 'core only';
+    const installLabel = adapters.length > 0 ? `core + ${adapters.join(', ')}` : 'core only';
     console.log(`Devflow: dry run — target: ${targetDir}${modeLabel}`);
     console.log(`Install set: ${installLabel}\n`);
     for (const { dest } of items) {
@@ -217,7 +261,7 @@ function runInit(options) {
   }
 
   const modeLabel = force ? ' (force)' : merge ? ' (merge)' : '';
-  const installLabel = tools.length > 0 ? `core + ${tools.join(', ')}` : 'core only';
+  const installLabel = adapters.length > 0 ? `core + ${adapters.join(', ')}` : 'core only';
   console.log(`Devflow: installing into ${targetDir}${modeLabel}`);
   console.log(`Install set: ${installLabel}\n`);
 
@@ -242,7 +286,7 @@ function runInit(options) {
     }
   }
 
-  const failures = validate(tools, targetDir);
+  const failures = validate(adapters, targetDir);
   if (failures.length > 0) {
     console.error('\nValidation failed — these files are missing:');
     failures.forEach((f) => console.error(`  ${f}`));
@@ -256,7 +300,7 @@ function runInit(options) {
 
 program
   .name('devflow')
-  .description('Universal AI development workflow toolkit — core prompts plus adapters for Cursor and manual tool guides')
+  .description('Universal AI development workflow toolkit — install the core plus optional adapters')
   .version(pkg.version, '-v, --version');
 
 program
@@ -267,8 +311,12 @@ program
   .option('-n, --dry-run', 'preview operations without writing')
   .option('-t, --target <path>', 'install into a different directory', process.cwd())
   .option(
-    '--adapter <adapters>',
-    `comma-separated adapters: ${ALL_TOOLS.join(', ')}, all`,
+    '--adapter <adapter>',
+    `single adapter: ${ALL_ADAPTERS.join(', ')}, none (default: cursor if .cursor exists, otherwise generic)`,
+  )
+  .option(
+    '--adapters <adapters>',
+    `comma-separated adapters: ${ALL_ADAPTERS.join(', ')}, none, all`,
   )
   .option(
     '--tool <tools>',

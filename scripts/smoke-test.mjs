@@ -43,6 +43,17 @@ function check(file, label) {
   }
 }
 
+function checkMissing(file, label) {
+  if (!existsSync(file)) {
+    console.log(`  PASS  ${label}`);
+    passed++;
+  } else {
+    console.error(`  FAIL  ${label}`);
+    console.error(`        unexpected file: ${file}`);
+    failed++;
+  }
+}
+
 function section(title) {
   console.log(`\n── ${title} ${'─'.repeat(Math.max(0, 50 - title.length))}`);
 }
@@ -52,10 +63,12 @@ function section(title) {
 const tmp = mkdtempSync(join(tmpdir(), 'devflow-smoke-'));
 const targets = {};
 
-for (const install of ['core', 'cursor', 'claude', 'codex', 'generic', 'all']) {
+for (const install of ['default-generic', 'default-cursor', 'none', 'cursor', 'claude-code', 'claude-legacy', 'codex', 'generic', 'multi']) {
   targets[install] = join(tmp, install);
   mkdirSync(targets[install]);
 }
+
+mkdirSync(join(targets['default-cursor'], '.cursor'));
 
 console.log(`Devflow smoke test`);
 console.log(`Temp dir: ${tmp}`);
@@ -64,12 +77,15 @@ console.log(`Temp dir: ${tmp}`);
 
 try {
   section('Installs');
-  run('core',    `init                  --target "${targets.core}"    --merge`);
-  run('cursor',  `init --adapter cursor  --target "${targets.cursor}"  --merge`);
-  run('claude',  `init --adapter claude  --target "${targets.claude}"  --merge`);
-  run('codex',   `init --adapter codex   --target "${targets.codex}"   --merge`);
-  run('generic', `init --adapter generic --target "${targets.generic}" --merge`);
-  run('all',     `init --adapter all     --target "${targets.all}"     --merge`);
+  run('default-generic', `init                           --target "${targets['default-generic']}" --merge`);
+  run('default-cursor',  `init                           --target "${targets['default-cursor']}"  --merge`);
+  run('none',            `init --adapter none            --target "${targets.none}"               --merge`);
+  run('cursor',          `init --adapter cursor          --target "${targets.cursor}"             --merge`);
+  run('claude-code',     `init --adapter claude-code     --target "${targets['claude-code']}"    --merge`);
+  run('claude-legacy',   `init --adapter claude          --target "${targets['claude-legacy']}"  --merge`);
+  run('codex',           `init --adapter codex           --target "${targets.codex}"              --merge`);
+  run('generic',         `init --adapter generic         --target "${targets.generic}"            --merge`);
+  run('multi',           `init --adapters cursor,generic --target "${targets.multi}"              --merge`);
 
   // ─── checks ────────────────────────────────────────────────────────────────
 
@@ -80,16 +96,31 @@ try {
     check(join(dir, 'DEVFLOW.md'),                       'DEVFLOW.md');
     check(join(dir, 'devflow', 'prompts', 'plan.txt'),   'devflow/prompts/plan.txt');
     check(join(dir, 'devflow', 'prompts', 'build.txt'),  'devflow/prompts/build.txt');
+    check(join(dir, 'devflow', 'prompts', 'tests.txt'),  'devflow/prompts/tests.txt');
     check(join(dir, 'devflow', 'prompts', 'review.txt'), 'devflow/prompts/review.txt');
+    check(join(dir, 'devflow', 'prompts', 'verify.txt'), 'devflow/prompts/verify.txt');
   }
+
+  section('default generic target');
+  check(join(targets['default-generic'], '.devflow', 'README.md'), '.devflow/README.md');
+
+  section('default cursor target');
+  check(join(targets['default-cursor'], '.cursor', 'commands', 'plan.md'), '.cursor/commands/plan.md');
+
+  section('none target');
+  checkMissing(join(targets.none, '.cursor', 'commands', 'plan.md'), '.cursor/commands/plan.md absent');
+  checkMissing(join(targets.none, '.devflow', 'README.md'), '.devflow/README.md absent');
 
   section('cursor target');
   check(join(targets.cursor, '.cursor', 'commands', 'plan.md'),    '.cursor/commands/plan.md');
   check(join(targets.cursor, '.cursor', 'commands', 'review.md'),  '.cursor/commands/review.md');
   check(join(targets.cursor, '.cursor', 'rules', 'typescript.md'), '.cursor/rules/typescript.md');
 
-  section('claude target');
-  check(join(targets.claude, '.devflow', 'adapters', 'claude-code', 'README.md'), '.devflow/adapters/claude-code/README.md');
+  section('claude-code target');
+  check(join(targets['claude-code'], '.devflow', 'adapters', 'claude-code', 'README.md'), '.devflow/adapters/claude-code/README.md');
+
+  section('claude legacy alias target');
+  check(join(targets['claude-legacy'], '.devflow', 'adapters', 'claude-code', 'README.md'), '.devflow/adapters/claude-code/README.md');
 
   section('codex target');
   check(join(targets.codex, '.devflow', 'adapters', 'codex', 'README.md'), '.devflow/adapters/codex/README.md');
@@ -97,11 +128,9 @@ try {
   section('generic target');
   check(join(targets.generic, '.devflow', 'README.md'), '.devflow/README.md');
 
-  section('all target');
-  check(join(targets.all, '.cursor', 'commands', 'plan.md'),    '.cursor/commands/plan.md');
-  check(join(targets.all, '.devflow', 'adapters', 'claude-code', 'README.md'), '.devflow/adapters/claude-code/README.md');
-  check(join(targets.all, '.devflow', 'adapters', 'codex', 'README.md'),       '.devflow/adapters/codex/README.md');
-  check(join(targets.all, '.devflow', 'README.md'),                             '.devflow/README.md');
+  section('multi target');
+  check(join(targets.multi, '.cursor', 'commands', 'plan.md'), '.cursor/commands/plan.md');
+  check(join(targets.multi, '.devflow', 'README.md'), '.devflow/README.md');
 
 } finally {
   rmSync(tmp, { recursive: true, force: true });
