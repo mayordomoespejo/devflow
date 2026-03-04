@@ -1,0 +1,21 @@
+review:
+  focus:
+    - bugs
+    - regressions
+    - missing_tests
+    - security
+  output:
+    format: findings_first
+    include_file_refs: true
+
+plan:
+  output:
+    include_files: true
+    include_risks: true
+
+verify:
+  checks:
+    - typecheck
+    - tests
+    - build
+    - edge_cases

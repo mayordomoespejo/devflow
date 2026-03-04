@@ -18,6 +18,7 @@ const TEMPLATES  = join(__dirname, '..', 'templates');
 const REQUIRED_CORE = [
   'core/AGENTS.md',
   'core/DEVFLOW.md',
+  'core/.devflow/workflows.yml',
   'prompts/plan.txt',
   'prompts/build.txt',
   'prompts/tests.txt',

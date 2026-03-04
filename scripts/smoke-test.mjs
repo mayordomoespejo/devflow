@@ -94,6 +94,7 @@ try {
     section(`core files — ${tool} target`);
     check(join(dir, 'AGENTS.md'),                        'AGENTS.md');
     check(join(dir, 'DEVFLOW.md'),                       'DEVFLOW.md');
+    check(join(dir, '.devflow', 'workflows.yml'),        '.devflow/workflows.yml');
     check(join(dir, 'devflow', 'prompts', 'plan.txt'),   'devflow/prompts/plan.txt');
     check(join(dir, 'devflow', 'prompts', 'build.txt'),  'devflow/prompts/build.txt');
     check(join(dir, 'devflow', 'prompts', 'tests.txt'),  'devflow/prompts/tests.txt');
