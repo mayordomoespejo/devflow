@@ -1,146 +1,150 @@
 # Devflow
 
-Portable AI development workflow for real projects.
+Devflow is a universal AI development workflow for real software projects.
 
-Devflow standardises how you work with AI to build software: `PLAN -> BUILD -> TEST -> REVIEW -> VERIFY`. It gives you a small universal core you can install in any repository, then optional adapters for supported tools or generic usage.
+It gives you three things:
 
-```sh
-npx devflow init
-```
+- a shared workflow: `PLAN -> BUILD -> TEST -> REVIEW -> VERIFY`
+- portable prompts you can reuse in any chat, IDE, or terminal workflow
+- optional adapters that map the workflow into specific tool conventions when that mapping is clear
 
-## What problem it solves
+Devflow is designed to be model-agnostic and harness-agnostic. It works with any model, including Claude, Gemini, GPT, and similar systems, without making your project depend on one vendor or one interface.
 
-Without a shared workflow, AI-assisted development tends to drift:
-
-- every project ends up with different prompts
-- quality depends on the current model or tool
-- agents jump into code before understanding the task
-- tests, review, and edge-case checks are inconsistent
-- long sessions lose context and engineering discipline
-
-Devflow makes the process repeatable, regardless of model or interface.
-
-## Product model
+## What Devflow installs
 
 Devflow has two layers:
 
-- Core: always installed, model-agnostic, tool-agnostic
-- Adapters: optional integrations for specific tools
+- Core: always installed
+- Adapters: optional
 
-The core is the actual product. Adapters only map that core into the conventions of each tool.
+The core is the source of truth. Adapters are thin additions on top.
 
-## What `devflow init` installs
+### Core
 
-By default, `npx devflow init` installs the universal core only:
+Every installation includes:
 
-- `AGENTS.md` - baseline agent behaviour and engineering principles
-- `DEVFLOW.md` - the workflow reference
+- `AGENTS.md` - universal instructions for the agent working in the repo
+- `DEVFLOW.md` - the workflow reference for `PLAN -> BUILD -> TEST -> REVIEW -> VERIFY`
 - `devflow/prompts/` - reusable prompts for `plan`, `build`, `tests`, `review`, and `verify`
 
-Add an adapter when you want native integration:
+This is the stable part of the product. If a user changes model or tool, the core still works.
 
-```sh
-npx devflow init --adapter cursor
-npx devflow init --adapter claude
-npx devflow init --adapter codex
-npx devflow init --adapter generic
-```
+### Adapters
 
-Install everything explicitly:
+Adapters are optional and exist only to make the core easier to use in a specific environment.
 
-```sh
-npx devflow init --adapter all
-```
+- `cursor` installs Cursor-facing command and rule files
+- `generic` installs usage instructions for any unsupported chat or IDE
+- `claude-code` and `codex` currently install guidance under `.devflow/adapters/` without inventing unsupported config
 
-`--tool` remains available as a backward-compatible alias for `--adapter`.
+If Devflow does not know a tool's official integration format, it does not fake one.
 
-## Quick start
+## Works With Any Model
 
-Install the core in any repo:
+Devflow is not tied to a specific model provider.
+
+You can use the same workflow with:
+
+- Claude
+- Gemini
+- GPT
+- local models
+- any future model that can read instructions and generate code
+
+The model can change. The engineering process should not.
+
+## Installation
+
+Install into the current repository:
 
 ```sh
 npx devflow init
 ```
 
-Install the core plus one adapter:
+Install with the Cursor adapter:
 
 ```sh
 npx devflow init --adapter cursor
 ```
 
-Preview changes first:
+Install with the generic adapter:
 
 ```sh
-npx devflow init --adapter claude --dry-run
+npx devflow init --adapter generic
 ```
 
-Add another adapter later without overwriting existing files:
+Default behavior:
+
+- if the target already uses `.cursor/`, Devflow defaults to `cursor`
+- otherwise Devflow defaults to `generic`
+
+Useful flags:
+
+- `--target <path>` installs into another directory
+- `--merge` keeps existing files and only adds missing Devflow-managed files
+- `--force` overwrites only Devflow-managed paths: `AGENTS.md`, `DEVFLOW.md`, `devflow/`, `.cursor/`, `.devflow/`
+- `--dry-run` previews what would change
+
+## Quick Start In 30 Seconds
+
+1. Run:
 
 ```sh
-npx devflow init --adapter codex --merge
+npx devflow init
 ```
 
-Refresh Devflow-managed files:
+2. Open the installed files:
 
-```sh
-npx devflow init --adapter all --force
-```
+- `AGENTS.md`
+- `DEVFLOW.md`
+- `devflow/prompts/plan.txt`
 
-## Workflow
+3. Start every non-trivial task with the workflow:
 
-The workflow is intentionally simple:
+- `PLAN` - understand the task, touched files, tests, and risks
+- `BUILD` - implement the smallest correct change
+- `TEST` - cover happy path, edge cases, and failures
+- `REVIEW` - inspect for bugs, security issues, duplication, and unnecessary complexity
+- `VERIFY` - confirm the result matches the plan and is ready to ship
 
-1. `PLAN` - understand the task, affected files, tests, and risks
-2. `BUILD` - change the minimum necessary code
-3. `TEST` - cover the happy path, edge cases, and failures
-4. `REVIEW` - look for bugs, security issues, duplication, and unnecessary complexity
-5. `VERIFY` - confirm the implementation matches the plan and is ready to ship
+4. If your tool supports native commands, install an adapter. If not, copy the prompts into your normal chat or IDE flow.
 
-This is the standard Devflow tries to install in every project, independent of model.
+That is the whole point of Devflow: one process, many tools.
 
-## Adapters
+## How Adapters Work
 
-| Adapter | Installs | Best for |
+Adapters do not replace the core. They only package it for a specific environment.
+
+Current adapter model:
+
+| Adapter | Type | Installed path |
 | --- | --- | --- |
-| `cursor` | `.cursor/commands/` and `.cursor/rules/` | Cursor IDE users |
-| `claude` | `.devflow/adapters/claude-code/README.md` | Claude Code users documenting a manual setup |
-| `codex` | `.devflow/adapters/codex/README.md` | Codex users relying on `AGENTS.md` |
-| `generic` | `.devflow/README.md` | Any chat UI or unsupported tool |
+| `cursor` | config-backed adapter | `.cursor/commands/`, `.cursor/rules/` |
+| `generic` | documentation adapter | `.devflow/README.md` |
+| `claude-code` | documentation adapter | `.devflow/adapters/claude-code/README.md` |
+| `codex` | documentation adapter | `.devflow/adapters/codex/README.md` |
 
-## CLI flags
+This keeps the product honest:
 
-| Flag | Short | Description |
-| --- | --- | --- |
-| `--adapter <list>` | | Comma-separated adapters: `cursor`, `claude`, `codex`, `generic`, `all` |
-| `--tool <list>` | | Deprecated alias for `--adapter` |
-| `--target <path>` | `-t` | Install into another directory |
-| `--merge` | `-m` | Skip files that already exist |
-| `--force` | `-f` | Overwrite Devflow-managed files |
-| `--dry-run` | `-n` | Preview without writing |
-| `--version` | `-v` | Print version |
-| `--help` | `-h` | Show help |
+- the workflow is universal
+- integrations are optional
+- unsupported formats stay as documentation until there is a clear contract
 
-## Design constraints
+## Why This Exists
 
-Devflow is intentionally narrow:
+AI-assisted development often degrades because teams keep changing prompts, models, and tools without keeping the engineering process stable.
 
-- it does not try to orchestrate fleets of agents
-- it does not depend on one model vendor
-- it does not add dangerous automation by default
-- it prefers explicit files over hidden behaviour
+Typical failure modes:
 
-That tradeoff is deliberate. The goal is portability, consistency, and maintainability.
+- coding starts before the problem is understood
+- tests are skipped or generated too late
+- review becomes optional
+- quality depends on the current chat session
+- every repository grows its own inconsistent prompt folklore
 
-## Success criteria
+Devflow gives the repo a stable process instead of relying on one person's memory or one tool's defaults.
 
-A good Devflow installation should let a user:
-
-- install a reusable workflow in 10 to 30 seconds
-- get the same engineering process across projects and tools
-- reduce prompt sprawl and session drift
-- produce smaller diffs, cleaner PRs, and fewer avoidable bugs
-
-## Repository structure
+## Repository Structure
 
 ```txt
 src/cli.js
@@ -148,27 +152,49 @@ templates/
   core/
   prompts/
   adapters/
+scripts/
 docs/
 examples/
-scripts/
 ```
+
+`templates/` is the source of truth for what `devflow init` installs.
+
+## Roadmap
+
+Near term:
+
+- keep the core stable and minimal
+- improve adapter documentation quality
+- harden CLI validation and smoke coverage
+- align docs and examples around the same contract
+
+Later, if clearly supported by each tool:
+
+- add more config-backed adapters only when the integration format is verified
+- improve adapter auto-detection where it is low-risk
+- expand prompt packs for common repo workflows without bloating the core
+
+Not planned:
+
+- vendor lock-in
+- model-specific workflow forks
+- hidden automation that rewrites arbitrary project files
 
 ## Verification
 
-Run the repository checks locally:
+Run the local checks:
 
 ```sh
 npm test
 ```
 
-This validates required templates and runs an end-to-end smoke test of the CLI installer.
+This validates the template contract and runs the CLI smoke test.
 
-## Tool guides
+## Tool Guides
 
 - [Cursor](docs/cursor.md)
 - [Claude Code](docs/claude-code.md)
 - [Codex](docs/codex.md)
-- [Gemini](docs/gemini.md)
 - [Generic](docs/generic.md)
 
 ## License
