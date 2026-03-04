@@ -1,0 +1,44 @@
+{
+  "name": "devflow",
+  "version": "0.1.0",
+  "description": "Portable AI development workflow kit with a universal core and optional adapters",
+  "main": "src/cli.js",
+  "bin": {
+    "devflow": "src/cli.js"
+  },
+  "scripts": {
+    "dev": "node src/cli.js",
+    "test:ci-smoke": "node scripts/ci-smoke-test.mjs",
+    "test:doctor": "node scripts/doctor-test.mjs",
+    "test:explain": "node scripts/explain-test.mjs",
+    "validate": "node scripts/validate-templates.mjs",
+    "test": "node scripts/validate-templates.mjs && node scripts/smoke-test.mjs && node scripts/doctor-test.mjs && node scripts/explain-test.mjs"
+  },
+  "files": [
+    "src",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "cursor",
+    "claude",
+    "codex",
+    "gemini",
+    "anthropic",
+    "ai",
+    "workflow",
+    "cli",
+    "agents",
+    "prompts",
+    "developer-tools"
+  ],
+  "author": "mayordomoespejo",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "commander": "^12.0.0"
+  }
+}

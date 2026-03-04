@@ -1,0 +1,14 @@
+Review the following implementation as a senior engineer.
+
+[Paste the code or describe what was implemented]
+
+Check for:
+
+- Bugs and logic errors
+- Unhandled edge cases
+- Security issues
+- Duplicated logic
+- Unnecessary complexity
+- Performance issues that matter in production
+
+Be specific. For each issue found, describe the problem and suggest a fix.
