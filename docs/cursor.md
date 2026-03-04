@@ -1,101 +1,133 @@
-# Devflow — Cursor
+# Devflow In Cursor
+
+This guide explains how to use Devflow with the Cursor adapter.
+
+Use this path when you want the universal Devflow core plus Cursor-native commands and rules.
 
 ## What gets installed
 
-```
-AGENTS.md
-.cursor/
-  commands/
-    plan.md
-    review.md
-    tests.md
-    verify.md
-  rules/
-    typescript.md
-```
-
-## Setup checklist
-
-- [ ] `npx devflow init --adapter cursor` in the project root
-- [ ] `DEVFLOW.md` exists at the project root
-- [ ] `devflow/prompts/` exists at the project root
-- [ ] `AGENTS.md` exists at the project root
-- [ ] `.cursor/commands/` contains `plan.md`, `review.md`, `tests.md`, `verify.md`
-- [ ] `.cursor/rules/typescript.md` exists
-- [ ] Open project in Cursor — commands are available immediately, no restart needed
-- [ ] Commit: `git add AGENTS.md .cursor && git commit -m "chore: add Devflow Cursor workflow"`
-
----
-
-## Install
+When you run:
 
 ```sh
 npx devflow init --adapter cursor
 ```
 
-Preview first, then apply:
+Devflow installs:
 
-```sh
-npx devflow init --adapter cursor --dry-run
-npx devflow init --adapter cursor --force   # overwrite existing
+```txt
+AGENTS.md
+DEVFLOW.md
+devflow/prompts/
+.cursor/
+  commands/
+    plan.md
+    tests.md
+    review.md
+    verify.md
+  rules/
+    typescript.md
 ```
 
----
+The core remains the source of truth. The Cursor adapter only exposes that workflow through Cursor-friendly files.
 
-## Slash commands
+## How To Use It
 
-Type any command in the Cursor chat panel. No restart required after install.
+Use the same Devflow phase order in Cursor:
 
-| Command | What it does |
-|---------|-------------|
-| `/plan` | Step-by-step implementation plan before writing code |
-| `/review` | Senior engineer code review of the current implementation |
-| `/tests` | Generate test cases for the current implementation |
-| `/verify` | Pre-finish checklist: edge cases, error handling, types |
+1. `PLAN`
+2. `BUILD`
+3. `TEST`
+4. `REVIEW`
+5. `VERIFY`
 
-**With an argument:**
+Recommended flow:
 
+1. Run `npx devflow init --adapter cursor`
+2. Open the repository in Cursor
+3. Start in chat with `/plan`
+4. Implement the task
+5. Run `/tests`
+6. Run `/review`
+7. Run `/verify`
+
+## Commands
+
+The adapter installs these command files:
+
+| Command | Purpose |
+| --- | --- |
+| `/plan` | Produce an implementation plan before coding |
+| `/tests` | Generate or improve tests for the current implementation |
+| `/review` | Review the implementation as a senior engineer |
+| `/verify` | Verify the work against the plan before finishing |
+
+If you need more context, include it after the command in chat.
+
+Examples:
+
+```text
+/plan add audit logging to the billing webhook
+/tests cover invalid token and expired session cases
+/review focus on error handling and duplicated logic
+/verify against the accepted plan
 ```
-/plan add a rate limiter to the API
-/tests for the AuthService class
-```
 
-The text after the command name is passed as context to the template.
+## Role Of Each File
 
-Commands live in `.cursor/commands/`. Cursor auto-discovers any `.md` file placed there — add your own by dropping additional files into that directory.
+- `AGENTS.md` defines the repo-level working style and engineering principles
+- `DEVFLOW.md` defines the workflow contract
+- `devflow/prompts/` gives you portable prompts you can still reuse outside Cursor
+- `.cursor/commands/` maps Devflow phases to Cursor commands
+- `.cursor/rules/typescript.md` adds a baseline TypeScript preference set
 
----
+## Checklist
 
-## TypeScript rules
-
-`.cursor/rules/typescript.md` is applied as an Always-on rule across all conversations. It enforces:
-
-- Explicit types — no `any`, no implicit types
-- Early returns over nested conditions
-- Small, pure functions
-
-**Scope:** Always-on (global by default). To scope a rule to specific files, rename it to `.mdc` and add a `globs` field in YAML front matter — see the [Cursor rules docs](https://docs.cursor.com/context/rules).
-
----
-
-## AGENTS.md
-
-`AGENTS.md` sits at the project root and contains the universal engineering principles shared across all tools. Cursor does not read it natively, but keeping it in the repo ensures teammates using Claude Code or Codex get the same baseline instructions.
-
----
+- [ ] Run `npx devflow init --adapter cursor` in the repository root
+- [ ] Confirm `AGENTS.md` exists
+- [ ] Confirm `DEVFLOW.md` exists
+- [ ] Confirm `devflow/prompts/plan.txt` exists
+- [ ] Confirm `.cursor/commands/plan.md` exists
+- [ ] Confirm `.cursor/commands/tests.md` exists
+- [ ] Confirm `.cursor/commands/review.md` exists
+- [ ] Confirm `.cursor/commands/verify.md` exists
+- [ ] Confirm `.cursor/rules/typescript.md` exists
+- [ ] Use `/plan` before making a non-trivial change
+- [ ] Finish with `/verify` before considering the task done
 
 ## Troubleshooting
 
-**Commands don't appear in the chat panel**
-- Confirm `.cursor/commands/` is at the project root (same level as `.git`).
-- Cursor auto-discovers command files — no configuration required.
-- Restart Cursor if they still don't appear after confirming the files exist.
+### Commands do not appear in Cursor
 
-**TypeScript rule not applying**
-- Confirm the file path is `.cursor/rules/typescript.md` (not `.mdc`).
-- `.md` rules are Always-on globally. For Auto Attach by glob or Agent Requested mode, rename to `.mdc` with the appropriate front matter.
+- Confirm `.cursor/commands/` exists in the project root
+- Confirm the files are Markdown files named `plan.md`, `tests.md`, `review.md`, `verify.md`
+- Reopen the project in Cursor if the files were added while it was already open
 
-**Conflict on re-install**
-- `npx devflow init --adapter cursor --dry-run` — preview what changes
-- `npx devflow init --adapter cursor --force` — overwrite Devflow-managed files
-- `npx devflow init --adapter cursor --merge` — skip existing, add only new files
+### The wrong adapter was installed by default
+
+- `devflow init` chooses `cursor` only when the target already contains `.cursor/`
+- If you want Cursor explicitly, run `npx devflow init --adapter cursor`
+
+### Reinstalling causes conflicts
+
+- Use `--dry-run` to preview changes
+- Use `--merge` to keep existing files and install only missing Devflow-managed files
+- Use `--force` to overwrite only Devflow-managed paths
+
+Examples:
+
+```sh
+npx devflow init --adapter cursor --dry-run
+npx devflow init --adapter cursor --merge
+npx devflow init --adapter cursor --force
+```
+
+### Cursor commands exist but the workflow still feels inconsistent
+
+- Check that the team is actually following `PLAN -> BUILD -> TEST -> REVIEW -> VERIFY`
+- Treat `.cursor/commands/` as an interface, not as the source of truth
+- Fall back to `DEVFLOW.md` and `devflow/prompts/` when a task needs more explicit structure
+
+## When To Use Another Guide
+
+- Use [Anywhere](anywhere.md) if you are working in a plain chat, another IDE, or a terminal harness without native Cursor commands
+- Use the adapter-specific README files under `.devflow/adapters/` only when you intentionally want guidance for those environments

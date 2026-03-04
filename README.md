@@ -192,10 +192,10 @@ This validates the template contract and runs the CLI smoke test.
 
 ## Tool Guides
 
+- [Anywhere](docs/anywhere.md)
 - [Cursor](docs/cursor.md)
 - [Claude Code](docs/claude-code.md)
 - [Codex](docs/codex.md)
-- [Generic](docs/generic.md)
 
 ## License
 
