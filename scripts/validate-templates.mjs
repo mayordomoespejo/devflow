@@ -13,28 +13,38 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATES  = join(__dirname, '..', 'templates');
 
 const REQUIRED = [
-  // ── common ──────────────────────────────────────────────────────────────
-  'common/AGENTS.md',
+  // ── core (always installed) ──────────────────────────────────────────────
+  'core/AGENTS.md',
+  'core/DEVFLOW.md',
 
-  // ── cursor ──────────────────────────────────────────────────────────────
-  'cursor/.cursor/commands/plan.md',
-  'cursor/.cursor/commands/review.md',
-  'cursor/.cursor/commands/tests.md',
-  'cursor/.cursor/commands/verify.md',
-  'cursor/.cursor/rules/typescript.md',
+  // ── prompts (always installed to devflow/prompts/) ───────────────────────
+  'prompts/plan.md',
+  'prompts/review.md',
+  'prompts/tests.md',
+  'prompts/verify.md',
 
-  // ── claude ──────────────────────────────────────────────────────────────
-  'claude/.claude/commands/plan.md',
-  'claude/.claude/commands/review.md',
-  'claude/.claude/commands/tests.md',
-  'claude/.claude/commands/verify.md',
-  'claude/.claude/rules/typescript.md',
+  // ── adapter: cursor ──────────────────────────────────────────────────────
+  'adapters/cursor/.cursor/commands/plan.md',
+  'adapters/cursor/.cursor/commands/review.md',
+  'adapters/cursor/.cursor/commands/tests.md',
+  'adapters/cursor/.cursor/commands/verify.md',
+  'adapters/cursor/.cursor/rules/typescript.md',
 
-  // ── codex (instruction-based, no commands) ──────────────────────────────
-  'codex/INSTRUCTIONS.md',
+  // ── adapter: claude-code ─────────────────────────────────────────────────
+  'adapters/claude-code/.claude/commands/plan.md',
+  'adapters/claude-code/.claude/commands/review.md',
+  'adapters/claude-code/.claude/commands/tests.md',
+  'adapters/claude-code/.claude/commands/verify.md',
+  'adapters/claude-code/.claude/rules/typescript.md',
 
-  // ── gemini (instruction-based, no commands) ─────────────────────────────
-  'gemini/INSTRUCTIONS.md',
+  // ── adapter: codex (instruction-based) ──────────────────────────────────
+  'adapters/codex/INSTRUCTIONS.md',
+
+  // ── adapter: gemini (instruction-based) ─────────────────────────────────
+  'adapters/gemini/INSTRUCTIONS.md',
+
+  // ── adapter: generic (harness-agnostic) ─────────────────────────────────
+  'adapters/generic/SETUP.md',
 ];
 
 let failed = 0;

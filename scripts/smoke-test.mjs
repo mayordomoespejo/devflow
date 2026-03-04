@@ -52,7 +52,7 @@ function section(title) {
 const tmp = mkdtempSync(join(tmpdir(), 'devflow-smoke-'));
 const targets = {};
 
-for (const tool of ['cursor', 'claude', 'codex', 'gemini', 'all']) {
+for (const tool of ['cursor', 'claude', 'codex', 'gemini', 'generic', 'all']) {
   targets[tool] = join(tmp, tool);
   mkdirSync(targets[tool]);
 }
@@ -64,41 +64,49 @@ console.log(`Temp dir: ${tmp}`);
 
 try {
   section('Installs');
-  run('cursor', `init --tool cursor --target "${targets.cursor}" --merge`);
-  run('claude', `init --tool claude --target "${targets.claude}" --merge`);
-  run('codex',  `init --tool codex  --target "${targets.codex}"  --merge`);
-  run('gemini', `init --tool gemini --target "${targets.gemini}" --merge`);
-  run('all',    `init --tool all    --target "${targets.all}"    --merge`);
+  run('cursor',  `init --tool cursor  --target "${targets.cursor}"  --merge`);
+  run('claude',  `init --tool claude  --target "${targets.claude}"  --merge`);
+  run('codex',   `init --tool codex   --target "${targets.codex}"   --merge`);
+  run('gemini',  `init --tool gemini  --target "${targets.gemini}"  --merge`);
+  run('generic', `init --tool generic --target "${targets.generic}" --merge`);
+  run('all',     `init --tool all     --target "${targets.all}"     --merge`);
 
   // ─── checks ────────────────────────────────────────────────────────────────
 
+  // Core files present in every target
+  for (const [tool, dir] of Object.entries(targets)) {
+    section(`core files — ${tool} target`);
+    check(join(dir, 'AGENTS.md'),                        'AGENTS.md');
+    check(join(dir, 'DEVFLOW.md'),                       'DEVFLOW.md');
+    check(join(dir, 'devflow', 'prompts', 'plan.md'),    'devflow/prompts/plan.md');
+  }
+
   section('cursor target');
-  check(join(targets.cursor, 'AGENTS.md'),                     'AGENTS.md');
-  check(join(targets.cursor, '.cursor', 'commands', 'plan.md'), '.cursor/commands/plan.md');
-  check(join(targets.cursor, '.cursor', 'commands', 'review.md'), '.cursor/commands/review.md');
+  check(join(targets.cursor, '.cursor', 'commands', 'plan.md'),    '.cursor/commands/plan.md');
+  check(join(targets.cursor, '.cursor', 'commands', 'review.md'),  '.cursor/commands/review.md');
   check(join(targets.cursor, '.cursor', 'rules', 'typescript.md'), '.cursor/rules/typescript.md');
 
   section('claude target');
-  check(join(targets.claude, 'AGENTS.md'),                          'AGENTS.md');
-  check(join(targets.claude, '.claude', 'commands', 'plan.md'),     '.claude/commands/plan.md');
-  check(join(targets.claude, '.claude', 'commands', 'review.md'),   '.claude/commands/review.md');
-  check(join(targets.claude, '.claude', 'rules', 'typescript.md'),  '.claude/rules/typescript.md');
+  check(join(targets.claude, '.claude', 'commands', 'plan.md'),    '.claude/commands/plan.md');
+  check(join(targets.claude, '.claude', 'commands', 'review.md'),  '.claude/commands/review.md');
+  check(join(targets.claude, '.claude', 'rules', 'typescript.md'), '.claude/rules/typescript.md');
 
   section('codex target');
-  check(join(targets.codex, 'AGENTS.md'),                'AGENTS.md');
   check(join(targets.codex, '.codex', 'INSTRUCTIONS.md'), '.codex/INSTRUCTIONS.md');
 
   section('gemini target');
-  check(join(targets.gemini, 'AGENTS.md'),                  'AGENTS.md');
   check(join(targets.gemini, '.gemini', 'INSTRUCTIONS.md'), '.gemini/INSTRUCTIONS.md');
 
+  section('generic target');
+  check(join(targets.generic, '.devflow', 'SETUP.md'), '.devflow/SETUP.md');
+
   section('all target');
-  check(join(targets.all, 'AGENTS.md'),                                 'AGENTS.md');
-  check(join(targets.all, '.cursor', 'commands', 'plan.md'),            '.cursor/commands/plan.md');
-  check(join(targets.all, '.claude', 'commands', 'plan.md'),            '.claude/commands/plan.md');
-  check(join(targets.all, '.claude', 'rules', 'typescript.md'),         '.claude/rules/typescript.md');
-  check(join(targets.all, '.codex', 'INSTRUCTIONS.md'),                 '.codex/INSTRUCTIONS.md');
-  check(join(targets.all, '.gemini', 'INSTRUCTIONS.md'),                '.gemini/INSTRUCTIONS.md');
+  check(join(targets.all, '.cursor', 'commands', 'plan.md'),    '.cursor/commands/plan.md');
+  check(join(targets.all, '.claude', 'commands', 'plan.md'),    '.claude/commands/plan.md');
+  check(join(targets.all, '.claude', 'rules', 'typescript.md'), '.claude/rules/typescript.md');
+  check(join(targets.all, '.codex', 'INSTRUCTIONS.md'),         '.codex/INSTRUCTIONS.md');
+  check(join(targets.all, '.gemini', 'INSTRUCTIONS.md'),        '.gemini/INSTRUCTIONS.md');
+  check(join(targets.all, '.devflow', 'SETUP.md'),              '.devflow/SETUP.md');
 
 } finally {
   rmSync(tmp, { recursive: true, force: true });

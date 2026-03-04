@@ -72,11 +72,13 @@ function collectFiles(dir, base = '') {
 }
 
 // Returns [{ src: absolutePath, dest: relPathInTarget }].
-// core/ is always included at target root.
+// core/ root files (AGENTS.md, DEVFLOW.md) go to target root.
+// prompts/ goes to target/devflow/prompts/ (namespaced to avoid clashes).
 // Each adapter's srcDir is mapped to its destDir.
 function buildInstallList(tools) {
   const sources = [
-    { srcDir: path.join(TEMPLATES_ROOT, 'core'), destPrefix: '' },
+    { srcDir: path.join(TEMPLATES_ROOT, 'core'),    destPrefix: '' },
+    { srcDir: path.join(TEMPLATES_ROOT, 'prompts'), destPrefix: path.join('devflow', 'prompts') },
   ];
   for (const tool of tools) {
     const { srcDir, destDir } = ADAPTER_CONFIG[tool];
