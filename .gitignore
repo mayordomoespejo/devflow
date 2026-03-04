@@ -4,6 +4,10 @@
 .cursor-local
 .cursor/
 .claude/
+!templates/adapters/cursor/.cursor/
+!templates/adapters/cursor/.cursor/**
+!templates/adapters/claude/.claude/
+!templates/adapters/claude/.claude/**
 
 # IDE
 .vscode
