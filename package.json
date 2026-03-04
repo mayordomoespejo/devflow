@@ -1,0 +1,27 @@
+{
+  "name": "devflow",
+  "version": "0.1.0",
+  "description": "AI-assisted development toolkit CLI for Cursor",
+  "main": "src/cli.js",
+  "bin": {
+    "devflow": "src/cli.js"
+  },
+  "scripts": {
+    "dev": "node src/cli.js"
+  },
+  "keywords": [
+    "cursor",
+    "ai",
+    "workflow",
+    "cli",
+    "agents"
+  ],
+  "author": "mayordomoespejo",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "commander": "^12.0.0"
+  }
+}
