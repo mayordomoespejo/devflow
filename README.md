@@ -26,8 +26,39 @@ Every installation includes:
 - `AGENTS.md` - universal instructions for the agent working in the repo
 - `DEVFLOW.md` - the workflow reference for `PLAN -> BUILD -> TEST -> REVIEW -> VERIFY`
 - `devflow/prompts/` - reusable prompts for `plan`, `build`, `tests`, `review`, and `verify`
+- `.devflow/workflows.yml` - optional workflow customization contract for this project
 
 This is the stable part of the product. If a user changes model or tool, the core still works.
+
+## Workflow Customization
+
+Devflow also installs an optional project file:
+
+```txt
+.devflow/workflows.yml
+```
+
+This file lets a project declare preferred workflow behavior without editing the shared prompts directly.
+
+Example uses:
+
+- define review focus areas such as bugs, regressions, missing tests, and security
+- declare what a plan should include
+- declare what verify should check before sign-off
+
+Today, `workflows.yml` is a configuration contract for:
+
+- humans working in the repository
+- agents that read project files directly
+- future Devflow versions that may interpret this config more deeply
+
+Current behavior:
+
+- Devflow installs the file as part of the core
+- you can edit it safely per project
+- the CLI does not yet parse it to rewrite prompts
+
+That is intentional. The file exists now so projects can establish stable local workflow expectations before deeper automation is added.
 
 ### Adapters
 

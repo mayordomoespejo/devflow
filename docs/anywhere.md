@@ -23,6 +23,7 @@ That gives you the universal core:
 ```txt
 AGENTS.md
 DEVFLOW.md
+.devflow/workflows.yml
 devflow/prompts/
 ```
 
@@ -47,11 +48,12 @@ Use that sequence regardless of model or interface.
 ### Minimal flow
 
 1. Start by giving the agent the repository context and `AGENTS.md`
-2. Use `devflow/prompts/plan.txt`
-3. After the plan is accepted, implement the change
-4. Use `devflow/prompts/tests.txt`
-5. Use `devflow/prompts/review.txt`
-6. Use `devflow/prompts/verify.txt`
+2. If present, also point the agent to `.devflow/workflows.yml`
+3. Use `devflow/prompts/plan.txt`
+4. After the plan is accepted, implement the change
+5. Use `devflow/prompts/tests.txt`
+6. Use `devflow/prompts/review.txt`
+7. Use `devflow/prompts/verify.txt`
 
 ## What Each Prompt Is For
 
@@ -62,6 +64,8 @@ Use that sequence regardless of model or interface.
 | `devflow/prompts/tests.txt` | After implementation |
 | `devflow/prompts/review.txt` | When reviewing for bugs and quality issues |
 | `devflow/prompts/verify.txt` | Before finishing the task |
+
+`.devflow/workflows.yml` is the optional project-level customization file. It does not replace the prompts, but it can declare how this repository wants `plan`, `review`, or `verify` to behave.
 
 ## Example Session
 
@@ -111,6 +115,7 @@ Before you finish, verify that:
 - [ ] Run `npx devflow init` or `npx devflow init --adapter generic`
 - [ ] Open `AGENTS.md`
 - [ ] Open `DEVFLOW.md`
+- [ ] Open `.devflow/workflows.yml` if present
 - [ ] Confirm `devflow/prompts/plan.txt` exists
 - [ ] Use `PLAN` before non-trivial code changes
 - [ ] Use `TEST`, `REVIEW`, and `VERIFY` before calling the work complete
