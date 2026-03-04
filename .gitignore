@@ -2,6 +2,8 @@
 
 # Cursor local config (si algún día aparece)
 .cursor-local
+.cursor/
+.claude/
 
 # IDE
 .vscode
