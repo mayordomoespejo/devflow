@@ -52,7 +52,7 @@ function section(title) {
 const tmp = mkdtempSync(join(tmpdir(), 'devflow-smoke-'));
 const targets = {};
 
-for (const install of ['core', 'cursor', 'claude', 'codex', 'gemini', 'generic', 'all']) {
+for (const install of ['core', 'cursor', 'claude', 'codex', 'generic', 'all']) {
   targets[install] = join(tmp, install);
   mkdirSync(targets[install]);
 }
@@ -68,7 +68,6 @@ try {
   run('cursor',  `init --adapter cursor  --target "${targets.cursor}"  --merge`);
   run('claude',  `init --adapter claude  --target "${targets.claude}"  --merge`);
   run('codex',   `init --adapter codex   --target "${targets.codex}"   --merge`);
-  run('gemini',  `init --adapter gemini  --target "${targets.gemini}"  --merge`);
   run('generic', `init --adapter generic --target "${targets.generic}" --merge`);
   run('all',     `init --adapter all     --target "${targets.all}"     --merge`);
 
@@ -79,8 +78,9 @@ try {
     section(`core files — ${tool} target`);
     check(join(dir, 'AGENTS.md'),                        'AGENTS.md');
     check(join(dir, 'DEVFLOW.md'),                       'DEVFLOW.md');
-    check(join(dir, 'devflow', 'prompts', 'plan.md'),    'devflow/prompts/plan.md');
-    check(join(dir, 'devflow', 'prompts', 'review.md'),  'devflow/prompts/review.md');
+    check(join(dir, 'devflow', 'prompts', 'plan.txt'),   'devflow/prompts/plan.txt');
+    check(join(dir, 'devflow', 'prompts', 'build.txt'),  'devflow/prompts/build.txt');
+    check(join(dir, 'devflow', 'prompts', 'review.txt'), 'devflow/prompts/review.txt');
   }
 
   section('cursor target');
@@ -89,26 +89,19 @@ try {
   check(join(targets.cursor, '.cursor', 'rules', 'typescript.md'), '.cursor/rules/typescript.md');
 
   section('claude target');
-  check(join(targets.claude, '.claude', 'commands', 'plan.md'),    '.claude/commands/plan.md');
-  check(join(targets.claude, '.claude', 'commands', 'review.md'),  '.claude/commands/review.md');
-  check(join(targets.claude, '.claude', 'rules', 'typescript.md'), '.claude/rules/typescript.md');
+  check(join(targets.claude, '.devflow', 'adapters', 'claude-code', 'README.md'), '.devflow/adapters/claude-code/README.md');
 
   section('codex target');
-  check(join(targets.codex, '.codex', 'INSTRUCTIONS.md'), '.codex/INSTRUCTIONS.md');
-
-  section('gemini target');
-  check(join(targets.gemini, '.gemini', 'INSTRUCTIONS.md'), '.gemini/INSTRUCTIONS.md');
+  check(join(targets.codex, '.devflow', 'adapters', 'codex', 'README.md'), '.devflow/adapters/codex/README.md');
 
   section('generic target');
-  check(join(targets.generic, '.devflow', 'SETUP.md'), '.devflow/SETUP.md');
+  check(join(targets.generic, '.devflow', 'README.md'), '.devflow/README.md');
 
   section('all target');
   check(join(targets.all, '.cursor', 'commands', 'plan.md'),    '.cursor/commands/plan.md');
-  check(join(targets.all, '.claude', 'commands', 'plan.md'),    '.claude/commands/plan.md');
-  check(join(targets.all, '.claude', 'rules', 'typescript.md'), '.claude/rules/typescript.md');
-  check(join(targets.all, '.codex', 'INSTRUCTIONS.md'),         '.codex/INSTRUCTIONS.md');
-  check(join(targets.all, '.gemini', 'INSTRUCTIONS.md'),        '.gemini/INSTRUCTIONS.md');
-  check(join(targets.all, '.devflow', 'SETUP.md'),              '.devflow/SETUP.md');
+  check(join(targets.all, '.devflow', 'adapters', 'claude-code', 'README.md'), '.devflow/adapters/claude-code/README.md');
+  check(join(targets.all, '.devflow', 'adapters', 'codex', 'README.md'),       '.devflow/adapters/codex/README.md');
+  check(join(targets.all, '.devflow', 'README.md'),                             '.devflow/README.md');
 
 } finally {
   rmSync(tmp, { recursive: true, force: true });

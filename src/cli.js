@@ -21,23 +21,18 @@ const ADAPTER_CONFIG = {
   },
   claude: {
     srcDir:  path.join('adapters', 'claude-code'),
-    destDir: '',
-    keyFile: path.join('.claude', 'commands', 'plan.md'),
+    destDir: path.join('.devflow', 'adapters', 'claude-code'),
+    keyFile: path.join('.devflow', 'adapters', 'claude-code', 'README.md'),
   },
   codex: {
     srcDir:  path.join('adapters', 'codex'),
-    destDir: '.codex',
-    keyFile: path.join('.codex', 'INSTRUCTIONS.md'),
-  },
-  gemini: {
-    srcDir:  path.join('adapters', 'gemini'),
-    destDir: '.gemini',
-    keyFile: path.join('.gemini', 'INSTRUCTIONS.md'),
+    destDir: path.join('.devflow', 'adapters', 'codex'),
+    keyFile: path.join('.devflow', 'adapters', 'codex', 'README.md'),
   },
   generic: {
     srcDir:  path.join('adapters', 'generic'),
     destDir: '.devflow',
-    keyFile: path.join('.devflow', 'SETUP.md'),
+    keyFile: path.join('.devflow', 'README.md'),
   },
 };
 
@@ -45,17 +40,18 @@ const ALL_TOOLS = Object.keys(ADAPTER_CONFIG);
 const CORE_KEY_FILES = [
   'AGENTS.md',
   'DEVFLOW.md',
-  path.join('devflow', 'prompts', 'plan.md'),
-  path.join('devflow', 'prompts', 'review.md'),
-  path.join('devflow', 'prompts', 'tests.md'),
-  path.join('devflow', 'prompts', 'verify.md'),
+  path.join('devflow', 'prompts', 'plan.txt'),
+  path.join('devflow', 'prompts', 'build.txt'),
+  path.join('devflow', 'prompts', 'tests.txt'),
+  path.join('devflow', 'prompts', 'review.txt'),
+  path.join('devflow', 'prompts', 'verify.txt'),
 ];
 
 // Paths Devflow is allowed to create or overwrite.
 // --force will never touch files outside these prefixes.
 const MANAGED_PREFIXES = new Set([
   'AGENTS.md', 'DEVFLOW.md',
-  '.cursor', '.claude', '.codex', '.gemini', '.devflow',
+  '.cursor', '.devflow',
   'devflow',
 ]);
 
@@ -260,7 +256,7 @@ function runInit(options) {
 
 program
   .name('devflow')
-  .description('Universal AI development workflow toolkit — Cursor, Claude Code, Codex, Gemini, and any chat interface')
+  .description('Universal AI development workflow toolkit — core prompts plus adapters for Cursor and manual tool guides')
   .version(pkg.version, '-v, --version');
 
 program

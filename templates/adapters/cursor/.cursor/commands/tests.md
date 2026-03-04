@@ -1,13 +1,14 @@
+# Devflow Tests
+
 Generate tests for the current implementation.
 
-Prefer:
+If the user provided inline command text, treat it as extra scope. Otherwise use the current conversation context and repository state.
 
-- realistic scenarios
-- integration tests when useful
-- minimal mocks
+Cover:
 
-Provide:
+- The happy path
+- Edge cases from planning
+- Error states and invalid input
+- Boundary conditions
 
-1. What should be tested
-2. Test cases
-3. Test code
+Prefer higher-value tests with minimal mocking.

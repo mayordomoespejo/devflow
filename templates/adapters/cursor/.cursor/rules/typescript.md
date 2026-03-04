@@ -1,15 +1,15 @@
-# Devflow TypeScript Rules
-
-Always prefer strict TypeScript.
-
-Avoid:
-
-- any
-- implicit types
-- nested ternaries
+# Devflow TypeScript Rule
 
 Prefer:
 
-- explicit types
-- early returns
-- small pure functions
+- explicit types at boundaries
+- small readable functions
+- early returns over nested conditionals
+- modifying existing code before adding abstractions
+
+Avoid:
+
+- `any` unless justified
+- deeply nested control flow
+- duplicated logic
+- speculative abstractions

@@ -1,13 +1,15 @@
-Create a step-by-step implementation plan.
+# Devflow Plan
 
-The plan must include:
+Create a step-by-step implementation plan for this task.
 
-1. What needs to be built
-2. Files that will change
-3. Functions or components to create
-4. Tests that should exist
-5. Possible edge cases
+If the user provided inline command text, treat it as the task description. Otherwise use the active conversation context.
 
-Do NOT write code yet.
+The response must include:
 
-Only produce the implementation plan.
+1. What needs to be built or changed
+2. Which files will be affected
+3. Functions, components, or types to create or modify
+4. Tests that should pass when done
+5. Edge cases and risks to address
+
+Do not write code yet.

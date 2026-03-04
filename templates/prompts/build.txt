@@ -1,0 +1,13 @@
+Implement the agreed plan for the following task:
+
+[Describe the task and include any accepted plan details here]
+
+Requirements:
+
+1. Make the smallest working change that satisfies the plan
+2. Modify existing code before adding new abstractions
+3. Keep functions small and explicit
+4. Preserve existing behavior outside the requested change
+5. Note any follow-up risks or tradeoffs if they remain
+
+Return the implementation and briefly explain what changed.

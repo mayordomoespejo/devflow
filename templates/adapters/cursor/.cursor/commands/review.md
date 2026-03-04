@@ -1,17 +1,16 @@
+# Devflow Review
+
 Review the current implementation as a senior engineer.
+
+If the user provided inline command text, treat it as additional focus for the review.
 
 Check for:
 
-- bugs
-- edge cases
-- security issues
-- duplicated logic
-- performance issues
-- unnecessary complexity
-- readability problems
+- Bugs and logic errors
+- Unhandled edge cases
+- Security issues
+- Duplicated logic
+- Unnecessary complexity
+- Material performance issues
 
-Output:
-
-1. Issues found
-2. Suggested improvements
-3. Overall assessment: GOOD / NEEDS IMPROVEMENT
+List concrete findings first and suggest fixes.

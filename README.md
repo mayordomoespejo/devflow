@@ -2,7 +2,7 @@
 
 Portable AI development workflow for real projects.
 
-Devflow standardises how you work with AI to build software: `PLAN -> BUILD -> TEST -> REVIEW -> VERIFY`. It gives you a small universal core you can install in any repository, then optional adapters for tools like Cursor, Claude Code, Codex, Gemini, or plain chat interfaces.
+Devflow standardises how you work with AI to build software: `PLAN -> BUILD -> TEST -> REVIEW -> VERIFY`. It gives you a small universal core you can install in any repository, then optional adapters for supported tools or generic usage.
 
 ```sh
 npx devflow init
@@ -35,7 +35,7 @@ By default, `npx devflow init` installs the universal core only:
 
 - `AGENTS.md` - baseline agent behaviour and engineering principles
 - `DEVFLOW.md` - the workflow reference
-- `devflow/prompts/` - reusable prompts for `plan`, `tests`, `review`, and `verify`
+- `devflow/prompts/` - reusable prompts for `plan`, `build`, `tests`, `review`, and `verify`
 
 Add an adapter when you want native integration:
 
@@ -43,7 +43,6 @@ Add an adapter when you want native integration:
 npx devflow init --adapter cursor
 npx devflow init --adapter claude
 npx devflow init --adapter codex
-npx devflow init --adapter gemini
 npx devflow init --adapter generic
 ```
 
@@ -104,16 +103,15 @@ This is the standard Devflow tries to install in every project, independent of m
 | Adapter | Installs | Best for |
 | --- | --- | --- |
 | `cursor` | `.cursor/commands/` and `.cursor/rules/` | Cursor IDE users |
-| `claude` | `.claude/commands/` and `.claude/rules/` | Claude Code users |
-| `codex` | `.codex/INSTRUCTIONS.md` | Codex users relying on `AGENTS.md` |
-| `gemini` | `.gemini/INSTRUCTIONS.md` | Gemini users who map Devflow into `GEMINI.md` |
-| `generic` | `.devflow/SETUP.md` | Any chat UI or unsupported tool |
+| `claude` | `.devflow/adapters/claude-code/README.md` | Claude Code users documenting a manual setup |
+| `codex` | `.devflow/adapters/codex/README.md` | Codex users relying on `AGENTS.md` |
+| `generic` | `.devflow/README.md` | Any chat UI or unsupported tool |
 
 ## CLI flags
 
 | Flag | Short | Description |
 | --- | --- | --- |
-| `--adapter <list>` | | Comma-separated adapters: `cursor`, `claude`, `codex`, `gemini`, `generic`, `all` |
+| `--adapter <list>` | | Comma-separated adapters: `cursor`, `claude`, `codex`, `generic`, `all` |
 | `--tool <list>` | | Deprecated alias for `--adapter` |
 | `--target <path>` | `-t` | Install into another directory |
 | `--merge` | `-m` | Skip files that already exist |
