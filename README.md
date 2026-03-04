@@ -230,7 +230,15 @@ Dry run complete. Run without --dry-run to apply.
 - [ ] Per-project config (`.devflowrc`) to persist tool and target preferences
 - [ ] Project-type presets (e.g. `--preset next`, `--preset node-api`)
 - [ ] Node 22 CI matrix
-- [ ] npm publish workflow and CHANGELOG
+- [ ] npm publish workflow
+
+---
+
+## Releases
+
+See [CHANGELOG.md](CHANGELOG.md) for the full release history.
+
+Latest release: **v0.1.0** — initial multi-tool release (Cursor, Claude Code, Codex, Gemini).
 
 ---
 
@@ -246,6 +254,14 @@ Dry run complete. Run without --dry-run to apply.
 ## Requirements
 
 - Node.js 18+
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Security
+
+See [SECURITY.md](SECURITY.md).
 
 ## License
 
