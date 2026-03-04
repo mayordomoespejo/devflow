@@ -11,8 +11,17 @@
     "validate": "node scripts/validate-templates.mjs",
     "test": "node scripts/validate-templates.mjs && node scripts/smoke-test.mjs"
   },
+  "files": [
+    "src",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [
     "cursor",
+    "claude",
+    "codex",
+    "gemini",
     "ai",
     "workflow",
     "cli",

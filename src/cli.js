@@ -38,6 +38,14 @@ const TOOL_CONFIG = {
 
 const ALL_TOOLS = Object.keys(TOOL_CONFIG);
 
+// Paths Devflow is allowed to create or overwrite.
+// --force will never touch files outside these prefixes.
+const MANAGED_PREFIXES = new Set(['AGENTS.md', '.cursor', '.claude', '.codex', '.gemini']);
+
+function isManaged(dest) {
+  return MANAGED_PREFIXES.has(dest.split(path.sep)[0]);
+}
+
 // ─── helpers ────────────────────────────────────────────────────────────────
 
 function collectFiles(dir, base = '') {
@@ -165,10 +173,11 @@ function runInit(options) {
     for (const { dest } of items) {
       const fileExists = exists(dest, targetDir);
       let tag;
-      if (!fileExists)     tag = '[create]  ';
-      else if (force)      tag = '[overwrite]';
-      else if (merge)      tag = '[skip]    ';
-      else                 tag = '[conflict]';
+      if (!fileExists)              tag = '[create]   ';
+      else if (!isManaged(dest))    tag = '[skip]     '; // never touch non-managed files
+      else if (force)               tag = '[overwrite]';
+      else if (merge)               tag = '[skip]     ';
+      else                          tag = '[conflict] ';
       console.log(`  ${tag}  ${dest}`);
     }
     if (!force && !merge && conflicts.length > 0) {
@@ -185,6 +194,11 @@ function runInit(options) {
     const existed = exists(item.dest, targetDir);
     if (existed && merge) {
       console.log(`  –  ${item.dest} (skipped)`);
+      continue;
+    }
+    // Safety: never overwrite files outside Devflow-managed paths, even with --force.
+    if (existed && !isManaged(item.dest)) {
+      console.log(`  –  ${item.dest} (skipped – not Devflow-managed)`);
       continue;
     }
     try {
